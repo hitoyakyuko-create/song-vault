@@ -1,0 +1,642 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>楽曲保管庫</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #EDEFF7;
+  --surface: #FFFFFF;
+  --ink: #161A2C;
+  --muted: #5B6280;
+  --line: #D5D9E8;
+  --accent: #3B4EDB;
+  --accent-ink: #FFFFFF;
+  --star: #B87400;
+  --danger: #B3261E;
+  --chip: #E1E5F4;
+  --tag-ink: #3F4666;
+  --scrim: rgba(10, 12, 24, .5);
+  --font: "Zen Kaku Gothic New", "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans JP", "Yu Gothic", Meiryo, sans-serif;
+  color-scheme: light;
+  box-sizing: border-box;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #12141F;
+    --surface: #1C2030;
+    --ink: #ECEEF8;
+    --muted: #A3AAC7;
+    --line: #2E3450;
+    --accent: #8C9BFF;
+    --accent-ink: #0E1230;
+    --star: #F2B84B;
+    --danger: #FF8A80;
+    --chip: #2A3050;
+    --tag-ink: #C6CBE6;
+    --scrim: rgba(0, 0, 0, .6);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #12141F;
+  --surface: #1C2030;
+  --ink: #ECEEF8;
+  --muted: #A3AAC7;
+  --line: #2E3450;
+  --accent: #8C9BFF;
+  --accent-ink: #0E1230;
+  --star: #F2B84B;
+  --danger: #FF8A80;
+  --chip: #2A3050;
+  --tag-ink: #C6CBE6;
+  --scrim: rgba(0, 0, 0, .6);
+  color-scheme: dark;
+}
+html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+*, *::before, *::after { box-sizing: inherit; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font);
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-text-size-adjust: 100%;
+}
+body.locked { overflow: hidden; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+button, input, select, textarea { font: inherit; color: inherit; }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+
+.app { max-width: 720px; margin: 0 auto; padding: 28px 16px 140px; }
+
+/* header */
+.head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 18px; }
+h1 { margin: 0; font-size: 1.9rem; font-weight: 900; letter-spacing: .04em; line-height: 1.2; }
+.count { margin: 0; color: var(--muted); font-size: .92rem; white-space: nowrap; }
+
+.tools { display: flex; gap: 8px; margin-bottom: 12px; }
+.search { flex: 1; min-width: 0; }
+.field-ctl {
+  width: 100%; min-height: 48px; padding: 0 14px;
+  background: var(--surface); border: 1px solid var(--line); border-radius: 12px;
+  font-size: 16px;
+}
+.field-ctl::placeholder { color: var(--muted); opacity: 1; }
+.sort { flex: none; }
+.sort select { padding-right: 8px; }
+
+.chips {
+  display: flex; gap: 8px; overflow-x: auto; padding: 2px 2px 10px; margin: 0 -2px 8px;
+  scrollbar-width: none;
+}
+.chips::-webkit-scrollbar { display: none; }
+.chip {
+  flex: none; min-height: 40px; padding: 0 16px;
+  background: var(--surface); border: 1px solid var(--line); border-radius: 999px;
+  cursor: pointer; white-space: nowrap; font-size: .92rem;
+}
+.chip[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); font-weight: 700; }
+
+/* list */
+.list { list-style: none; margin: 0; padding: 0; background: var(--surface); border: 1px solid var(--line); border-radius: 16px; overflow: hidden; }
+.row { display: flex; align-items: center; border-bottom: 1px solid var(--line); }
+.row:last-child { border-bottom: 0; }
+.row-main {
+  flex: 1; min-width: 0; display: flex; align-items: center; gap: 14px;
+  padding: 12px 4px 12px 14px; background: none; border: 0; text-align: left; cursor: pointer;
+}
+.row-main:focus-visible { outline-offset: -3px; }
+.cover { flex: none; width: 56px; height: 56px; border-radius: 8px; display: block; }
+.meta { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.name { font-weight: 700; font-size: 1.02rem; line-height: 1.4; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.artist { color: var(--muted); font-size: .9rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
+.tag { background: var(--chip); color: var(--tag-ink); font-size: .75rem; line-height: 1.5; padding: 1px 9px; border-radius: 999px; }
+.actions { flex: none; display: flex; align-items: center; padding-right: 6px; }
+.icon-btn {
+  width: 44px; height: 44px; display: grid; place-items: center;
+  background: none; border: 0; border-radius: 12px; color: var(--muted); cursor: pointer; text-decoration: none;
+}
+.icon-btn:hover { color: var(--ink); }
+.icon-btn.on { color: var(--star); }
+
+.msg { margin: 36px 8px; text-align: center; color: var(--muted); }
+.foot { margin: 14px 4px 0; color: var(--muted); font-size: .85rem; }
+
+/* add button */
+.fab-wrap {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 20; pointer-events: none;
+  display: flex; justify-content: center;
+}
+.fab-inner {
+  width: 100%; max-width: 720px; display: flex; justify-content: flex-end;
+  padding: 16px 16px calc(16px + env(safe-area-inset-bottom, 0px));
+}
+.fab {
+  pointer-events: auto; min-height: 52px; padding: 0 26px;
+  background: var(--accent); color: var(--accent-ink); border: 0; border-radius: 999px;
+  font-weight: 700; font-size: 1rem; cursor: pointer;
+  box-shadow: 0 6px 18px rgba(20, 28, 90, .28);
+}
+
+/* sheet */
+.overlay {
+  position: fixed; inset: 0; z-index: 50; background: var(--scrim);
+  display: flex; align-items: flex-end; justify-content: center;
+}
+.overlay[hidden] { display: none; }
+.sheet {
+  width: 100%; max-width: 560px; max-height: 94%; overflow-y: auto;
+  background: var(--surface); border-radius: 20px 20px 0 0;
+  padding: 20px 18px calc(20px + env(safe-area-inset-bottom, 0px));
+  animation: rise .22s ease-out;
+}
+@keyframes rise { from { transform: translateY(24px); opacity: 0; } to { transform: none; opacity: 1; } }
+@media (min-width: 640px) {
+  .overlay { align-items: center; }
+  .sheet { border-radius: 20px; padding-bottom: 20px; }
+}
+h2 { margin: 0 0 14px; font-size: 1.25rem; font-weight: 700; }
+.fld { display: block; margin-bottom: 14px; }
+.fld > span { display: block; font-weight: 700; font-size: .9rem; margin-bottom: 4px; }
+.fld > small { display: block; color: var(--muted); font-size: .8rem; margin-top: 4px; }
+.fld .field-ctl { border-radius: 10px; }
+textarea.field-ctl { padding: 10px 14px; min-height: 92px; resize: vertical; line-height: 1.6; }
+.check { display: flex; align-items: center; gap: 10px; min-height: 44px; margin-bottom: 8px; cursor: pointer; }
+.check input { width: 22px; height: 22px; accent-color: var(--accent); }
+.err { min-height: 1.4em; margin: 0 0 8px; color: var(--danger); font-size: .9rem; }
+.btns { display: flex; gap: 10px; flex-wrap: wrap; }
+.btn {
+  min-height: 48px; padding: 0 22px; border-radius: 12px; cursor: pointer; font-weight: 700;
+  border: 1px solid var(--line); background: var(--surface);
+}
+.btn.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.btn.danger { color: var(--danger); border-color: var(--danger); margin-right: auto; }
+.btn[disabled] { opacity: .55; cursor: default; }
+
+.toast {
+  position: fixed; left: 50%; bottom: calc(92px + env(safe-area-inset-bottom, 0px)); z-index: 60;
+  transform: translateX(-50%); max-width: calc(100% - 32px);
+  background: var(--ink); color: var(--bg); padding: 10px 16px; border-radius: 10px; font-size: .92rem;
+  opacity: 0; pointer-events: none; transition: opacity .2s;
+}
+.toast.show { opacity: 1; }
+@media (prefers-reduced-motion: reduce) {
+  .sheet { animation: none; }
+  .toast { transition: none; }
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="head">
+      <h1>楽曲保管庫</h1>
+      <p class="count" id="count" aria-live="polite"></p>
+    </div>
+    <div class="tools">
+      <label class="search">
+        <span class="sr">曲を検索</span>
+        <input id="q" class="field-ctl" type="search" placeholder="曲名・アーティスト・タグで検索" autocomplete="off">
+      </label>
+      <label class="sort">
+        <span class="sr">並べ替え</span>
+        <select id="sort" class="field-ctl">
+          <option value="new">新しい順</option>
+          <option value="title">曲名順</option>
+          <option value="artist">アーティスト順</option>
+        </select>
+      </label>
+    </div>
+    <div class="chips" id="chips" role="group" aria-label="タグで絞り込み" hidden></div>
+  </header>
+  <main>
+    <ul class="list" id="list" hidden></ul>
+    <div id="state"></div>
+    <p class="foot" id="foot" hidden>この曲リストは、いま開いているブラウザの中にだけ保存されます。</p>
+  </main>
+</div>
+
+<div class="fab-wrap"><div class="fab-inner"><button id="add" class="fab" type="button">曲を追加</button></div></div>
+
+<div id="overlay" class="overlay" hidden>
+  <div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
+    <h2 id="sheetTitle">曲を追加</h2>
+    <label class="fld"><span>曲名</span><input id="fTitle" class="field-ctl" type="text" maxlength="120" autocomplete="off"></label>
+    <label class="fld"><span>アーティスト</span><input id="fArtist" class="field-ctl" type="text" maxlength="120" autocomplete="off"></label>
+    <label class="fld"><span>タグ</span><input id="fTags" class="field-ctl" type="text" placeholder="例：作業用, ゲームBGM" autocomplete="off"><small>カンマか空白で区切ります</small></label>
+    <label class="fld"><span>リンク</span><input id="fUrl" class="field-ctl" type="url" inputmode="url" placeholder="https://" autocomplete="off"></label>
+    <label class="fld"><span>メモ</span><textarea id="fNote" class="field-ctl" maxlength="1000"></textarea></label>
+    <label class="check"><input id="fFav" type="checkbox"><span>お気に入りにする</span></label>
+    <p class="err" id="fErr" role="alert"></p>
+    <div class="btns">
+      <button id="del" class="btn danger" type="button" hidden>削除</button>
+      <button id="cancel" class="btn" type="button">キャンセル</button>
+      <button id="save" class="btn primary" type="button">追加</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function () {
+  'use strict';
+
+  const $ = (sel) => document.querySelector(sel);
+  const NS = 'http://www.w3.org/2000/svg';
+  const coll = new Intl.Collator('ja');
+  const LOCAL_KEY = 'song-vault-v1';
+
+  const state = {
+    songs: [], loaded: false, backend: null, db: null,
+    q: '', sort: 'new', filter: { kind: 'all', tag: '' },
+    editingId: null, busy: new Set()
+  };
+
+  /* ---------- DOM helpers (all text goes through textContent) ---------- */
+  function h(tag, props, ...kids) {
+    const el = document.createElement(tag);
+    if (props) {
+      for (const k of Object.keys(props)) {
+        const v = props[k];
+        if (v == null || v === false) continue;
+        if (k === 'class') el.className = v;
+        else if (k.slice(0, 2) === 'on') el.addEventListener(k.slice(2), v);
+        else el.setAttribute(k, v === true ? '' : v);
+      }
+    }
+    for (const kid of kids.flat()) {
+      if (kid == null || kid === false) continue;
+      el.append(kid.nodeType ? kid : document.createTextNode(String(kid)));
+    }
+    return el;
+  }
+  function svgEl(tag, attrs) {
+    const el = document.createElementNS(NS, tag);
+    for (const k of Object.keys(attrs || {})) el.setAttribute(k, attrs[k]);
+    return el;
+  }
+
+  /* ---------- generated jacket art ---------- */
+  function hash(str) {
+    let x = 2166136261 >>> 0;
+    for (let i = 0; i < str.length; i++) { x ^= str.charCodeAt(i); x = Math.imul(x, 16777619) >>> 0; }
+    return x >>> 0;
+  }
+  function cover(song) {
+    const seed = hash((song.title || '') + '|' + (song.artist || ''));
+    const hue = seed % 360;
+    const hue2 = (hue + 35 + ((seed >>> 9) % 70)) % 360;
+    const kind = (seed >>> 17) % 5;
+    const c1 = 'hsl(' + hue + ' 58% 38%)';
+    const c2 = 'hsl(' + hue2 + ' 70% 68%)';
+    const c3 = 'hsl(' + ((hue2 + 180) % 360) + ' 60% 88%)';
+    const svg = svgEl('svg', { viewBox: '0 0 64 64', 'aria-hidden': 'true', class: 'cover' });
+    svg.append(svgEl('rect', { width: 64, height: 64, fill: c1 }));
+    if (kind === 0) {
+      [26, 19, 12, 5].forEach((r, i) => svg.append(svgEl('circle', { cx: 32, cy: 32, r: r, fill: i % 2 ? c1 : c2 })));
+      svg.append(svgEl('circle', { cx: 32, cy: 32, r: 2, fill: c3 }));
+    } else if (kind === 1) {
+      for (let i = -2; i < 8; i++) svg.append(svgEl('rect', { x: i * 11 - 4, y: -10, width: 5, height: 90, fill: c2, transform: 'rotate(28 32 32)' }));
+      svg.append(svgEl('circle', { cx: 44, cy: 20, r: 7, fill: c3 }));
+    } else if (kind === 2) {
+      for (let y = 0; y < 4; y++) for (let x = 0; x < 4; x++) {
+        svg.append(svgEl('circle', { cx: 8 + x * 16, cy: 8 + y * 16, r: 3 + ((seed >>> (x + y * 4)) & 3) * 1.6, fill: (x + y) % 2 ? c2 : c3 }));
+      }
+    } else if (kind === 3) {
+      svg.append(svgEl('circle', { cx: 0, cy: 64, r: 44, fill: c2 }));
+      svg.append(svgEl('circle', { cx: 0, cy: 64, r: 26, fill: c1 }));
+      svg.append(svgEl('circle', { cx: 52, cy: 14, r: 9, fill: c3 }));
+    } else {
+      svg.append(svgEl('polygon', { points: '0,64 32,8 64,64', fill: c2 }));
+      svg.append(svgEl('polygon', { points: '16,64 32,34 48,64', fill: c1 }));
+    }
+    return svg;
+  }
+
+  function iconStar(on) {
+    const s = svgEl('svg', { viewBox: '0 0 24 24', width: 24, height: 24, 'aria-hidden': 'true' });
+    s.append(svgEl('polygon', {
+      points: '12,2.8 14.9,9 21.6,9.7 16.6,14.3 18,21 12,17.6 6,21 7.4,14.3 2.4,9.7 9.1,9',
+      fill: on ? 'currentColor' : 'none', stroke: 'currentColor', 'stroke-width': '1.8', 'stroke-linejoin': 'round'
+    }));
+    return s;
+  }
+  function iconLink() {
+    const s = svgEl('svg', {
+      viewBox: '0 0 24 24', width: 22, height: 22, 'aria-hidden': 'true', fill: 'none',
+      stroke: 'currentColor', 'stroke-width': '1.8', 'stroke-linecap': 'round', 'stroke-linejoin': 'round'
+    });
+    s.append(svgEl('path', { d: 'M14 4h6v6' }), svgEl('path', { d: 'M20 4l-9 9' }),
+      svgEl('path', { d: 'M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5' }));
+    return s;
+  }
+
+  /* ---------- data ---------- */
+  function str(v, max) { return typeof v === 'string' ? v.slice(0, max) : ''; }
+  function safeUrl(u) {
+    if (!u) return '';
+    try {
+      const x = new URL(String(u).trim());
+      return (x.protocol === 'http:' || x.protocol === 'https:') ? x.href : '';
+    } catch (e) { return ''; }
+  }
+  function clean(id, d) {
+    d = d || {};
+    return {
+      id: id,
+      title: str(d.title, 120),
+      artist: str(d.artist, 120),
+      tags: Array.isArray(d.tags) ? d.tags.filter((t) => typeof t === 'string' && t).slice(0, 12).map((t) => t.slice(0, 24)) : [],
+      note: str(d.note, 1000),
+      url: safeUrl(str(d.url, 500)),
+      fav: d.fav === true,
+      createdAt: Number.isFinite(d.createdAt) ? d.createdAt : 0
+    };
+  }
+  function parseTags(text) {
+    const seen = new Set();
+    return text.split(/[,、，\s]+/).map((t) => t.trim().replace(/^#/, '').slice(0, 24)).filter((t) => {
+      if (!t || seen.has(t)) return false;
+      seen.add(t); return true;
+    }).slice(0, 12);
+  }
+  function newId() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 8); }
+
+  function readLocal() {
+    try {
+      const raw = localStorage.getItem(LOCAL_KEY);
+      const arr = raw ? JSON.parse(raw) : [];
+      return Array.isArray(arr) ? arr.filter((x) => x && typeof x.id === 'string').map((x) => clean(x.id, x)) : [];
+    } catch (e) { return []; }
+  }
+  function writeLocal(list) {
+    try { localStorage.setItem(LOCAL_KEY, JSON.stringify(list)); }
+    catch (e) { throw { code: 'local_failed' }; }
+  }
+
+  async function persist(song) {
+    if (state.backend === 'db') {
+      const body = Object.assign({}, song); delete body.id;
+      await state.db.collection('songs').doc(song.id).set(body);
+      return;
+    }
+    const next = state.songs.slice();
+    const i = next.findIndex((x) => x.id === song.id);
+    if (i >= 0) next[i] = song; else next.push(song);
+    writeLocal(next); state.songs = next; render();
+  }
+  async function removeSong(id) {
+    if (state.backend === 'db') { await state.db.collection('songs').doc(id).delete(); return; }
+    const next = state.songs.filter((x) => x.id !== id);
+    writeLocal(next); state.songs = next; render();
+  }
+  async function toggleFav(id) {
+    if (state.busy.has(id)) return;
+    const sg = state.songs.find((x) => x.id === id);
+    if (!sg) return;
+    state.busy.add(id);
+    try {
+      if (state.backend === 'db') await state.db.collection('songs').doc(id).update({ fav: !sg.fav });
+      else await persist(Object.assign({}, sg, { fav: !sg.fav }));
+    } catch (e) { toast(errMsg(e)); }
+    finally { state.busy.delete(id); }
+  }
+  function errMsg(e) {
+    switch (e && e.code) {
+      case 'quota_exceeded': return '保存できる曲数の上限に達しています。不要な曲を削除してください。';
+      case 'resource_exhausted': return '操作が多すぎます。少し待ってからもう一度お試しください。';
+      case 'revoked': return 'アクセス権が変わったため保存できません。ページを開き直してください。';
+      case 'invalid_argument': return '保存できませんでした。この曲を編集する権限がない可能性があります。';
+      case 'local_failed': return 'ブラウザに保存できませんでした。空き容量や設定を確認してください。';
+      default: return '保存に失敗しました。もう一度お試しください。';
+    }
+  }
+
+  /* ---------- view ---------- */
+  function norm(t) { return (t || '').normalize('NFKC').toLowerCase(); }
+  function view() {
+    const words = norm(state.q).trim().split(/\s+/).filter(Boolean);
+    const list = state.songs.filter((sg) => {
+      if (state.filter.kind === 'fav' && !sg.fav) return false;
+      if (state.filter.kind === 'tag' && sg.tags.indexOf(state.filter.tag) < 0) return false;
+      if (!words.length) return true;
+      const hay = norm([sg.title, sg.artist, sg.note, sg.tags.join(' ')].join(' '));
+      return words.every((w) => hay.indexOf(w) >= 0);
+    });
+    list.sort((a, b) => {
+      if (state.sort === 'title') return coll.compare(a.title, b.title);
+      if (state.sort === 'artist') {
+        return ((a.artist ? 0 : 1) - (b.artist ? 0 : 1)) || coll.compare(a.artist, b.artist) || coll.compare(a.title, b.title);
+      }
+      return (b.createdAt - a.createdAt) || coll.compare(a.title, b.title);
+    });
+    return list;
+  }
+
+  function renderItem(sg) {
+    const star = h('button', {
+      class: 'icon-btn' + (sg.fav ? ' on' : ''), type: 'button',
+      'aria-pressed': String(sg.fav), 'aria-label': sg.fav ? 'お気に入りを外す' : 'お気に入りに追加',
+      onclick: (e) => { e.stopPropagation(); toggleFav(sg.id); }
+    }, iconStar(sg.fav));
+    const open = sg.url ? h('a', {
+      class: 'icon-btn', href: sg.url, target: '_blank', rel: 'noopener noreferrer',
+      'aria-label': 'リンクを開く', onclick: (e) => e.stopPropagation()
+    }, iconLink()) : null;
+    const main = h('button', { class: 'row-main', type: 'button', onclick: () => openSheet(sg.id) },
+      cover(sg),
+      h('span', { class: 'meta' },
+        h('span', { class: 'name' }, sg.title || '（無題）'),
+        sg.artist ? h('span', { class: 'artist' }, sg.artist) : null,
+        sg.tags.length ? h('span', { class: 'tags' }, sg.tags.map((t) => h('span', { class: 'tag' }, t))) : null));
+    return h('li', { class: 'row' }, main, h('span', { class: 'actions' }, open, star));
+  }
+
+  function renderChips() {
+    const box = $('#chips');
+    box.replaceChildren();
+    const counts = new Map();
+    state.songs.forEach((s) => s.tags.forEach((t) => counts.set(t, (counts.get(t) || 0) + 1)));
+    const anyFav = state.songs.some((s) => s.fav);
+    if (state.filter.kind === 'tag' && !counts.has(state.filter.tag)) state.filter = { kind: 'all', tag: '' };
+    if (state.filter.kind === 'fav' && !anyFav) state.filter = { kind: 'all', tag: '' };
+    box.hidden = state.songs.length === 0;
+    const mk = (label, active, fn) => h('button', { class: 'chip', type: 'button', 'aria-pressed': String(active), onclick: fn }, label);
+    box.append(mk('すべて', state.filter.kind === 'all', () => setFilter({ kind: 'all', tag: '' })));
+    if (anyFav) box.append(mk('お気に入り', state.filter.kind === 'fav', () => setFilter({ kind: 'fav', tag: '' })));
+    Array.from(counts.keys()).sort((a, b) => (counts.get(b) - counts.get(a)) || coll.compare(a, b)).forEach((t) => {
+      box.append(mk(t, state.filter.kind === 'tag' && state.filter.tag === t, () => setFilter({ kind: 'tag', tag: t })));
+    });
+  }
+
+  function renderList() {
+    const list = $('#list'), st = $('#state');
+    list.replaceChildren(); st.replaceChildren();
+    if (!state.loaded) { list.hidden = true; st.append(h('p', { class: 'msg' }, '読み込み中…')); return; }
+    const items = view();
+    items.forEach((sg) => list.append(renderItem(sg)));
+    list.hidden = items.length === 0;
+    if (state.songs.length === 0) {
+      st.append(h('p', { class: 'msg' }, 'まだ曲がありません。「曲を追加」から最初の1曲を登録しましょう。'));
+    } else if (items.length === 0) {
+      st.append(h('p', { class: 'msg' }, '条件に合う曲がありません。検索語かタグを変えてください。'),
+        h('div', { style: 'text-align:center' }, h('button', { class: 'btn', type: 'button', onclick: clearFilters }, '条件をクリア')));
+    }
+    $('#foot').hidden = state.backend !== 'local';
+  }
+  function renderCount() {
+    const el = $('#count');
+    if (!state.loaded) { el.textContent = ''; return; }
+    const n = state.songs.length, m = view().length;
+    el.textContent = m === n ? '全' + n + '曲' : m + '曲 / 全' + n + '曲';
+  }
+  function render() { renderChips(); renderList(); renderCount(); }
+  function setFilter(f) { state.filter = f; render(); }
+  function clearFilters() { state.q = ''; $('#q').value = ''; state.filter = { kind: 'all', tag: '' }; render(); }
+
+  /* ---------- toast ---------- */
+  let toastTimer = null;
+  function toast(msg) {
+    const el = $('#toast');
+    el.textContent = msg; el.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => el.classList.remove('show'), 2600);
+  }
+
+  /* ---------- sheet ---------- */
+  const overlay = $('#overlay'), sheet = $('#sheet');
+  let lastFocus = null, delArmed = false, delTimer = null;
+
+  function setErr(msg) { $('#fErr').textContent = msg || ''; }
+  function resetDel() { clearTimeout(delTimer); delArmed = false; $('#del').textContent = '削除'; }
+  function setSaving(on) { $('#save').disabled = on; $('#del').disabled = on; $('#cancel').disabled = on; }
+
+  function openSheet(id) {
+    const sg = id ? state.songs.find((x) => x.id === id) : null;
+    if (id && !sg) return;
+    state.editingId = sg ? sg.id : null;
+    $('#sheetTitle').textContent = sg ? '曲を編集' : '曲を追加';
+    $('#save').textContent = sg ? '保存' : '追加';
+    $('#fTitle').value = sg ? sg.title : '';
+    $('#fArtist').value = sg ? sg.artist : '';
+    $('#fTags').value = sg ? sg.tags.join(', ') : '';
+    $('#fUrl').value = sg ? sg.url : '';
+    $('#fNote').value = sg ? sg.note : '';
+    $('#fFav').checked = sg ? sg.fav : false;
+    setErr(''); setSaving(false); resetDel();
+    $('#del').hidden = !sg;
+    lastFocus = document.activeElement;
+    overlay.hidden = false;
+    document.body.classList.add('locked');
+    $('#fTitle').focus();
+  }
+  function closeSheet() {
+    overlay.hidden = true;
+    document.body.classList.remove('locked');
+    resetDel();
+    if (lastFocus && lastFocus.focus && document.contains(lastFocus)) lastFocus.focus();
+  }
+
+  async function onSave() {
+    const title = $('#fTitle').value.trim();
+    if (!title) { setErr('曲名を入力してください。'); $('#fTitle').focus(); return; }
+    let url = $('#fUrl').value.trim();
+    if (url) {
+      if (!/^https?:\/\//i.test(url)) url = 'https://' + url;
+      url = safeUrl(url);
+      if (!url) { setErr('リンクは https:// から始まるURLを入力してください。'); $('#fUrl').focus(); return; }
+    }
+    const existing = state.editingId ? state.songs.find((x) => x.id === state.editingId) : null;
+    const song = {
+      id: existing ? existing.id : newId(),
+      title: title.slice(0, 120),
+      artist: $('#fArtist').value.trim().slice(0, 120),
+      tags: parseTags($('#fTags').value),
+      note: $('#fNote').value.trim().slice(0, 1000),
+      url: url,
+      fav: $('#fFav').checked,
+      createdAt: existing ? existing.createdAt : Date.now()
+    };
+    setErr(''); setSaving(true);
+    try {
+      await persist(song);
+      closeSheet();
+      toast(existing ? '保存しました' : '追加しました');
+    } catch (e) {
+      setErr(errMsg(e)); setSaving(false);
+    }
+  }
+  async function onDelete() {
+    if (!delArmed) {
+      delArmed = true; $('#del').textContent = 'もう一度押して削除';
+      delTimer = setTimeout(resetDel, 4000);
+      return;
+    }
+    setSaving(true);
+    try {
+      await removeSong(state.editingId);
+      closeSheet(); toast('削除しました');
+    } catch (e) {
+      setErr(errMsg(e)); setSaving(false); resetDel();
+    }
+  }
+
+  /* ---------- wiring ---------- */
+  $('#add').addEventListener('click', () => openSheet());
+  $('#save').addEventListener('click', onSave);
+  $('#cancel').addEventListener('click', closeSheet);
+  $('#del').addEventListener('click', onDelete);
+  overlay.addEventListener('mousedown', (e) => { if (e.target === overlay) closeSheet(); });
+  overlay.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') { closeSheet(); return; }
+    if (e.key === 'Enter' && !e.isComposing && e.keyCode !== 229 && e.target.tagName === 'INPUT' && e.target.type !== 'checkbox') {
+      e.preventDefault(); onSave(); return;
+    }
+    if (e.key !== 'Tab') return;
+    const f = Array.from(sheet.querySelectorAll('input, textarea, button')).filter((el) => !el.disabled && !el.hidden && el.offsetParent !== null);
+    if (!f.length) return;
+    const first = f[0], last = f[f.length - 1];
+    if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+  });
+  $('#q').addEventListener('input', (e) => { state.q = e.target.value; renderList(); renderCount(); });
+  $('#sort').addEventListener('change', (e) => { state.sort = e.target.value; renderList(); });
+
+  /* ---------- start ---------- */
+  render();
+
+  async function init() {
+    let db = null;
+    try {
+      if (window.claude && typeof window.claude.use === 'function') db = await window.claude.use('db');
+    } catch (e) { db = null; }
+    if (db) {
+      state.db = db; state.backend = 'db';
+      db.collection('songs').onSnapshot((snap) => {
+        state.songs = snap.docs.map((d) => clean(d.id, d.data()));
+        state.loaded = true; render();
+      }, () => {
+        state.loaded = true; render();
+        toast('曲リストを読み込めませんでした。ページを開き直してください。');
+      });
+    } else {
+      state.backend = 'local';
+      state.songs = readLocal();
+      state.loaded = true; render();
+    }
+  }
+  init();
+})();
+</script>
+</body>
+</html>
