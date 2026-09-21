@@ -137,7 +137,7 @@ h1 { margin: 0; font-size: 1.9rem; font-weight: 900; letter-spacing: .04em; line
   display: flex; justify-content: center;
 }
 .fab-inner {
-  width: 100%; max-width: 720px; display: flex; justify-content: flex-end;
+  width: 100%; max-width: 720px; display: flex; justify-content: space-between; align-items: flex-end; gap: 12px;
   padding: 16px 16px calc(16px + env(safe-area-inset-bottom, 0px));
 }
 .fab {
@@ -146,6 +146,15 @@ h1 { margin: 0; font-size: 1.9rem; font-weight: 900; letter-spacing: .04em; line
   font-weight: 700; font-size: 1rem; cursor: pointer;
   box-shadow: 0 6px 18px rgba(20, 28, 90, .28);
 }
+.fab.secondary { background: var(--surface); color: var(--ink); border: 1px solid var(--line); font-weight: 500; box-shadow: 0 6px 18px rgba(20, 28, 90, .16); }
+.sub { margin: 0 0 6px; color: var(--muted); font-size: .92rem; }
+.stack { display: flex; flex-direction: column; gap: 10px; margin: 14px 0; }
+.stack .btn { width: 100%; }
+.paste { margin: 0 0 12px; }
+.paste summary { display: flex; align-items: center; min-height: 44px; cursor: pointer; font-weight: 700; font-size: .92rem; }
+.paste textarea { display: block; margin: 6px 0 10px; padding: 10px 14px; min-height: 110px; }
+.status { min-height: 1.4em; margin: 0 0 8px; font-size: .92rem; }
+.status.bad { color: var(--danger); }
 
 /* sheet */
 .overlay {
@@ -205,7 +214,7 @@ textarea.field-ctl { padding: 10px 14px; min-height: 92px; resize: vertical; lin
     <div class="tools">
       <label class="search">
         <span class="sr">曲を検索</span>
-        <input id="q" class="field-ctl" type="search" placeholder="曲名・アーティスト・タグで検索" autocomplete="off">
+        <input id="q" class="field-ctl" type="search" placeholder="曲を検索" autocomplete="off">
       </label>
       <label class="sort">
         <span class="sr">並べ替え</span>
@@ -225,7 +234,7 @@ textarea.field-ctl { padding: 10px 14px; min-height: 92px; resize: vertical; lin
   </main>
 </div>
 
-<div class="fab-wrap"><div class="fab-inner"><button id="add" class="fab" type="button">曲を追加</button></div></div>
+<div class="fab-wrap"><div class="fab-inner"><button id="backup" class="fab secondary" type="button">バックアップ</button><button id="add" class="fab" type="button">曲を追加</button></div></div>
 
 <div id="overlay" class="overlay" hidden>
   <div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
@@ -242,6 +251,27 @@ textarea.field-ctl { padding: 10px 14px; min-height: 92px; resize: vertical; lin
       <button id="cancel" class="btn" type="button">キャンセル</button>
       <button id="save" class="btn primary" type="button">追加</button>
     </div>
+  </div>
+</div>
+
+<div id="bkOverlay" class="overlay" hidden>
+  <div class="sheet" id="bkSheet" role="dialog" aria-modal="true" aria-labelledby="bkTitle">
+    <h2 id="bkTitle">バックアップ</h2>
+    <p class="sub">曲リストをJSONファイルに書き出して保管できます。別の端末やブラウザで読み込むと、同じ曲を追加できます。</p>
+    <p class="sub" id="bkCount"></p>
+    <div class="stack">
+      <button id="bkExport" class="btn primary" type="button">ファイルに書き出す</button>
+      <button id="bkCopy" class="btn" type="button">クリップボードにコピー</button>
+      <button id="bkImport" class="btn" type="button">ファイルから読み込む</button>
+    </div>
+    <details class="paste">
+      <summary>貼り付けて読み込む</summary>
+      <textarea id="bkPaste" class="field-ctl" placeholder="コピーしたJSONをここに貼り付け" aria-label="JSONを貼り付け"></textarea>
+      <button id="bkPasteGo" class="btn" type="button">貼り付けた内容を読み込む</button>
+    </details>
+    <p class="status" id="bkStatus" role="status"></p>
+    <div class="btns"><button id="bkClose" class="btn" type="button">閉じる</button></div>
+    <input id="bkFile" type="file" accept=".json,application/json" hidden>
   </div>
 </div>
 
@@ -591,23 +621,189 @@ textarea.field-ctl { padding: 10px 14px; min-height: 92px; resize: vertical; lin
     }
   }
 
+  /* ---------- backup (JSON export / import) ---------- */
+  const bkOverlay = $('#bkOverlay'), bkSheet = $('#bkSheet');
+  let bkLastFocus = null;
+
+  function bkStatus(msg, bad) {
+    const el = $('#bkStatus');
+    el.textContent = msg || '';
+    el.className = 'status' + (bad ? ' bad' : '');
+  }
+  function bkCount() { $('#bkCount').textContent = '現在 ' + state.songs.length + ' 曲'; }
+  function openBackup() {
+    bkStatus('', false); bkCount();
+    bkLastFocus = document.activeElement;
+    bkOverlay.hidden = false;
+    document.body.classList.add('locked');
+    $('#bkExport').focus();
+  }
+  function closeBackup() {
+    bkOverlay.hidden = true;
+    document.body.classList.remove('locked');
+    if (bkLastFocus && bkLastFocus.focus && document.contains(bkLastFocus)) bkLastFocus.focus();
+  }
+  function bkReady() {
+    if (!state.loaded) { bkStatus('曲リストを読み込み中です。少し待ってからもう一度お試しください。', true); return false; }
+    return true;
+  }
+  function ymd() {
+    const d = new Date(), p = (n) => String(n).padStart(2, '0');
+    return d.getFullYear() + p(d.getMonth() + 1) + p(d.getDate());
+  }
+  function exportText() {
+    return JSON.stringify({ app: 'song-vault', version: 1, exportedAt: new Date().toISOString(), songs: state.songs }, null, 2);
+  }
+
+  async function doExport() {
+    if (!bkReady()) return;
+    if (!state.songs.length) { bkStatus('書き出す曲がまだありません。', true); return; }
+    const text = exportText();
+    const name = 'song-vault-' + ymd() + '.json';
+    let file = null;
+    try { file = new File([text], name, { type: 'application/json' }); } catch (e) { file = null; }
+    try {
+      if (file && navigator.canShare && navigator.canShare({ files: [file] })) {
+        await navigator.share({ files: [file], title: '楽曲保管庫のバックアップ' });
+        bkStatus('書き出しました。', false);
+        return;
+      }
+    } catch (e) {
+      if (e && e.name === 'AbortError') return;
+    }
+    try {
+      const url = URL.createObjectURL(new Blob([text], { type: 'application/json' }));
+      const a = h('a', { href: url, download: name });
+      document.body.append(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 10000);
+      bkStatus('ダウンロードを開始しました。保存されない場合は「クリップボードにコピー」を使ってください。', false);
+    } catch (e) {
+      bkStatus('書き出せませんでした。「クリップボードにコピー」をお試しください。', true);
+    }
+  }
+
+  async function doCopy() {
+    if (!bkReady()) return;
+    if (!state.songs.length) { bkStatus('コピーする曲がまだありません。', true); return; }
+    const text = exportText();
+    try {
+      await navigator.clipboard.writeText(text);
+      bkStatus('コピーしました。メモアプリなどに貼り付けて保管できます。', false);
+    } catch (e) {
+      let ok = false;
+      const ta = h('textarea', { class: 'sr', 'aria-hidden': 'true', tabindex: '-1' });
+      ta.value = text;
+      document.body.append(ta);
+      try { ta.select(); ta.setSelectionRange(0, text.length); ok = document.execCommand('copy'); } catch (e2) { ok = false; }
+      ta.remove();
+      if (ok) bkStatus('コピーしました。メモアプリなどに貼り付けて保管できます。', false);
+      else bkStatus('コピーできませんでした。「ファイルに書き出す」をお試しください。', true);
+    }
+  }
+
+  async function addMany(list) {
+    if (state.backend === 'db') {
+      let done = 0;
+      for (const sg of list) {
+        const body = Object.assign({}, sg); delete body.id;
+        try { await state.db.collection('songs').doc(sg.id).set(body); done++; }
+        catch (e) { return { done: done, error: e }; }
+      }
+      return { done: done };
+    }
+    const next = state.songs.concat(list);
+    writeLocal(next); state.songs = next; render();
+    return { done: list.length };
+  }
+
+  async function importText(text) {
+    if (!bkReady()) return false;
+    let data;
+    try { data = JSON.parse(text); }
+    catch (e) { bkStatus('JSONとして読み取れませんでした。書き出したファイルの内容か確認してください。', true); return false; }
+    const arr = Array.isArray(data) ? data : (data && Array.isArray(data.songs) ? data.songs : null);
+    if (!arr) { bkStatus('曲のデータが見つかりませんでした。', true); return false; }
+    if (arr.length > 5000) { bkStatus('曲が多すぎます（5000曲まで）。', true); return false; }
+
+    const key = (x) => norm(x.title) + '|' + norm(x.artist);
+    const ids = new Set(state.songs.map((x) => x.id));
+    const keys = new Set(state.songs.map(key));
+    const fresh = [];
+    let skipped = 0, bad = 0;
+    for (const raw of arr) {
+      if (!raw || typeof raw !== 'object') { bad++; continue; }
+      const id = (typeof raw.id === 'string' && /^[A-Za-z0-9]{1,40}$/.test(raw.id)) ? raw.id : newId();
+      const sg = clean(id, raw);
+      if (!sg.title) { bad++; continue; }
+      if (ids.has(sg.id) || keys.has(key(sg))) { skipped++; continue; }
+      if (!sg.createdAt) sg.createdAt = Date.now();
+      ids.add(sg.id); keys.add(key(sg)); fresh.push(sg);
+    }
+
+    let res;
+    try { res = fresh.length ? await addMany(fresh) : { done: 0 }; }
+    catch (e) { bkStatus(errMsg(e), true); return false; }
+
+    const extra = (skipped ? '（登録済みの' + skipped + '曲はスキップ）' : '') + (bad ? '（読み取れなかった' + bad + '件）' : '');
+    bkCount();
+    if (res.error) {
+      bkStatus(res.done + '曲を追加したところで失敗しました。' + errMsg(res.error), true);
+      return false;
+    }
+    if (res.done === 0) {
+      bkStatus(skipped ? 'すべて登録済みの曲でした。' + extra : '追加できる曲がありませんでした。' + extra, !skipped);
+      return skipped > 0;
+    }
+    bkStatus(res.done + '曲を追加しました。' + extra, false);
+    return true;
+  }
+
   /* ---------- wiring ---------- */
   $('#add').addEventListener('click', () => openSheet());
   $('#save').addEventListener('click', onSave);
   $('#cancel').addEventListener('click', closeSheet);
   $('#del').addEventListener('click', onDelete);
+  function trapTab(root, e) {
+    if (e.key !== 'Tab') return;
+    const f = Array.from(root.querySelectorAll('input, textarea, button')).filter((el) => !el.disabled && !el.hidden && el.offsetParent !== null);
+    if (!f.length) return;
+    const first = f[0], last = f[f.length - 1];
+    if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+  }
   overlay.addEventListener('mousedown', (e) => { if (e.target === overlay) closeSheet(); });
   overlay.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') { closeSheet(); return; }
     if (e.key === 'Enter' && !e.isComposing && e.keyCode !== 229 && e.target.tagName === 'INPUT' && e.target.type !== 'checkbox') {
       e.preventDefault(); onSave(); return;
     }
-    if (e.key !== 'Tab') return;
-    const f = Array.from(sheet.querySelectorAll('input, textarea, button')).filter((el) => !el.disabled && !el.hidden && el.offsetParent !== null);
-    if (!f.length) return;
-    const first = f[0], last = f[f.length - 1];
-    if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
-    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    trapTab(sheet, e);
+  });
+  bkOverlay.addEventListener('mousedown', (e) => { if (e.target === bkOverlay) closeBackup(); });
+  bkOverlay.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') { closeBackup(); return; }
+    trapTab(bkSheet, e);
+  });
+  $('#backup').addEventListener('click', openBackup);
+  $('#bkClose').addEventListener('click', closeBackup);
+  $('#bkExport').addEventListener('click', doExport);
+  $('#bkCopy').addEventListener('click', doCopy);
+  $('#bkImport').addEventListener('click', () => { $('#bkFile').click(); });
+  $('#bkFile').addEventListener('change', async (e) => {
+    const input = e.target;
+    const f = input.files && input.files[0];
+    if (!f) return;
+    if (f.size > 5 * 1024 * 1024) { input.value = ''; bkStatus('ファイルが大きすぎます（5MBまで）。', true); return; }
+    let text = null;
+    try { text = await f.text(); } catch (err) { text = null; }
+    input.value = '';
+    if (text == null) { bkStatus('ファイルを読み込めませんでした。', true); return; }
+    await importText(text);
+  });
+  $('#bkPasteGo').addEventListener('click', async () => {
+    const box = $('#bkPaste');
+    if (!box.value.trim()) { bkStatus('JSONを貼り付けてから押してください。', true); return; }
+    if (await importText(box.value)) box.value = '';
   });
   $('#q').addEventListener('input', (e) => { state.q = e.target.value; renderList(); renderCount(); });
   $('#sort').addEventListener('change', (e) => { state.sort = e.target.value; renderList(); });
