@@ -387,7 +387,7 @@ textarea.field-ctl { padding: 10px 14px; min-height: 92px; resize: vertical; lin
         <span class="filename" id="fFileName">未選択</span>
         <button id="fFileClear" class="link" type="button" hidden>外す</button>
       </div>
-      <small>mp3・m4a・wavなどの音声ファイル（60MBまで）。このブラウザの中に保存され、バックアップには含まれません。</small>
+      <small id="fFileHint">mp3・m4a・wavなどの音声ファイル。このブラウザの中に保存され、バックアップには含まれません。</small>
       <input id="fFile" type="file" accept="audio/*,.mp3,.m4a,.aac,.wav,.flac,.ogg,.opus" hidden>
     </div>
     <label class="fld"><span>メモ</span><textarea id="fNote" class="field-ctl" maxlength="1000"></textarea></label>
@@ -435,10 +435,10 @@ textarea.field-ctl { padding: 10px 14px; min-height: 92px; resize: vertical; lin
       <dl class="tips">
         <div><dt>曲を追加する</dt><dd>右下の「曲を追加」から登録します。必須なのは曲名だけ。アーティスト・タグ・リンク・メモはあとから足せます。</dd></div>
         <div><dt>探す</dt><dd>検索欄は、曲名・アーティスト・タグ・メモをまとめて探します。上のタグをタップすると絞り込めます。</dd></div>
-        <div><dt>曲ファイル</dt><dd>追加画面の「曲ファイル」で音声ファイルを選ぶと、リストの再生ボタンで聴けます。ファイルはこのブラウザの中だけに保存されます。</dd></div>
+        <div><dt>曲ファイル</dt><dd id="tipFile">追加画面の「曲ファイル」で音声ファイルを選ぶと、リストの再生ボタンで聴けます。ファイルはこのブラウザの中だけに保存されます。</dd></div>
         <div><dt>お気に入り</dt><dd>曲の右にある星をタップします。お気に入りの曲があると、タグの並びに「お気に入り」が出ます。</dd></div>
         <div><dt>編集・削除</dt><dd>曲をタップすると編集できます。削除は「削除」を2回押すと確定します。</dd></div>
-        <div><dt>バックアップ</dt><dd>曲リストは、いま開いているブラウザの中に保存されます。左下の「バックアップ」でファイルに書き出しておくと安心です。別の端末には、書き出したファイルを読み込むと移せます。</dd></div>
+        <div><dt>バックアップ</dt><dd id="tipBackup">曲リストは、いま開いているブラウザの中に保存されます。左下の「バックアップ」でファイルに書き出しておくと安心です。別の端末には、書き出したファイルを読み込むと移せます。</dd></div>
       </dl>
     </div>
     <div class="sheet-foot">
@@ -449,6 +449,7 @@ textarea.field-ctl { padding: 10px 14px; min-height: 92px; resize: vertical; lin
 
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script>
 (function () {
   'use strict';
@@ -459,8 +460,13 @@ textarea.field-ctl { padding: 10px 14px; min-height: 92px; resize: vertical; lin
   const LOCAL_KEY = 'song-vault-v1';
   const SORT_KEY = 'song-vault-sort';
 
+  /* ---------- Supabase設定：ここに自分のプロジェクトの値を入れてください ---------- */
+  const SUPABASE_URL = 'https://wcflqcxskexarblsnyht.supabase.co';
+  const SUPABASE_ANON_KEY = 'sb_publishable_GSHJEtx8W4ZhTL_hDe2M2A_tkCsIeM9';
+  const FILE_BUCKET = 'song-files';
+
   const state = {
-    songs: [], loaded: false, backend: null, db: null,
+    songs: [], loaded: false, backend: null, sb: null,
     q: '', sort: 'new', filter: { kind: 'all', tag: '' },
     editingId: null, busy: new Set(), flash: null, flashScroll: false, fileMeta: new Map()
   };
@@ -575,8 +581,32 @@ textarea.field-ctl { padding: 10px 14px; min-height: 92px; resize: vertical; lin
       note: str(d.note, 1000),
       url: safeUrl(str(d.url, 500)),
       fav: d.fav === true,
-      createdAt: Number.isFinite(d.createdAt) ? d.createdAt : 0
+      createdAt: Number.isFinite(d.createdAt) ? d.createdAt : 0,
+      fileName: (typeof d.fileName === 'string' && d.fileName) ? d.fileName.slice(0, 200) : null,
+      fileType: (typeof d.fileType === 'string' && d.fileType) ? d.fileType : null,
+      fileSize: Number.isFinite(d.fileSize) ? d.fileSize : null
     };
+  }
+  /* Supabaseの行 <-> アプリ内の曲オブジェクトの変換 */
+  function rowToSong(row) {
+    return clean(row.id, {
+      title: row.title, artist: row.artist, tags: row.tags, note: row.note, url: row.url, fav: row.fav,
+      createdAt: typeof row.created_at === 'number' ? row.created_at : Number(row.created_at),
+      fileName: row.file_name, fileType: row.file_type, fileSize: row.file_size
+    });
+  }
+  function songToRow(song) {
+    return {
+      id: song.id, title: song.title, artist: song.artist, tags: song.tags, note: song.note, url: song.url,
+      fav: song.fav, created_at: song.createdAt,
+      file_name: song.fileName, file_type: song.fileType, file_size: song.fileSize
+    };
+  }
+  function sbErr(error) {
+    const msg = (error && error.message) || '';
+    if (/permission|policy|row-level security/i.test(msg)) return { code: 'invalid_argument', message: msg };
+    if (/rate|too many/i.test(msg)) return { code: 'resource_exhausted', message: msg };
+    return { code: 'db_failed', message: msg };
   }
   function parseTags(text) {
     const seen = new Set();
@@ -601,8 +631,9 @@ textarea.field-ctl { padding: 10px 14px; min-height: 92px; resize: vertical; lin
 
   async function persist(song) {
     if (state.backend === 'db') {
-      const body = Object.assign({}, song); delete body.id;
-      await state.db.collection('songs').doc(song.id).set(body);
+      const { error } = await state.sb.from('songs').upsert(songToRow(song));
+      if (error) throw sbErr(error);
+      await refreshSongs();
       return;
     }
     const next = state.songs.slice();
@@ -611,7 +642,12 @@ textarea.field-ctl { padding: 10px 14px; min-height: 92px; resize: vertical; lin
     writeLocal(next); state.songs = next; render();
   }
   async function removeSong(id) {
-    if (state.backend === 'db') { await state.db.collection('songs').doc(id).delete(); return; }
+    if (state.backend === 'db') {
+      const { error } = await state.sb.from('songs').delete().eq('id', id);
+      if (error) throw sbErr(error);
+      await refreshSongs();
+      return;
+    }
     const next = state.songs.filter((x) => x.id !== id);
     writeLocal(next); state.songs = next; render();
   }
@@ -620,10 +656,8 @@ textarea.field-ctl { padding: 10px 14px; min-height: 92px; resize: vertical; lin
     const sg = state.songs.find((x) => x.id === id);
     if (!sg) return;
     state.busy.add(id);
-    try {
-      if (state.backend === 'db') await state.db.collection('songs').doc(id).update({ fav: !sg.fav });
-      else await persist(Object.assign({}, sg, { fav: !sg.fav }));
-    } catch (e) { toast(errMsg(e)); }
+    try { await persist(Object.assign({}, sg, { fav: !sg.fav })); }
+    catch (e) { toast(errMsg(e)); }
     finally { state.busy.delete(id); }
   }
   function errMsg(e) {
@@ -633,8 +667,34 @@ textarea.field-ctl { padding: 10px 14px; min-height: 92px; resize: vertical; lin
       case 'revoked': return 'アクセス権が変わったため保存できません。ページを開き直してください。';
       case 'invalid_argument': return '保存できませんでした。この曲を編集する権限がない可能性があります。';
       case 'local_failed': return 'ブラウザに保存できませんでした。空き容量や設定を確認してください。';
+      case 'db_failed': return '保存に失敗しました。' + (e.message ? '（' + e.message + '）' : 'もう一度お試しください。');
       default: return '保存に失敗しました。もう一度お試しください。';
     }
+  }
+  /* 曲一覧をSupabaseから読み直し、ファイル情報を作り直して再描画する */
+  async function refreshSongs() {
+    const { data, error } = await state.sb.from('songs').select('*');
+    if (error) { toast('曲リストを読み込めませんでした。' + errMsg(sbErr(error))); return; }
+    state.songs = (data || []).map(rowToSong);
+    state.loaded = true;
+    rebuildFileMeta();
+    render();
+  }
+  function rebuildFileMeta() {
+    const m = new Map();
+    state.songs.forEach((s) => { if (s.fileName) m.set(s.id, { name: s.fileName, type: s.fileType, size: s.fileSize }); });
+    state.fileMeta = m;
+  }
+  function subscribeRealtime() {
+    state.sb.channel('songs-sync')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'songs' }, () => { refreshSongs(); })
+      .subscribe();
+  }
+  function createSupabaseClient() {
+    if (!window.supabase || typeof window.supabase.createClient !== 'function') return null;
+    if (!SUPABASE_URL || !SUPABASE_ANON_KEY || SUPABASE_URL.indexOf('YOUR_') === 0 || SUPABASE_ANON_KEY.indexOf('YOUR_') === 0) return null;
+    try { return window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY); }
+    catch (e) { return null; }
   }
 
   /* ---------- view ---------- */
@@ -821,24 +881,32 @@ textarea.field-ctl { padding: 10px 14px; min-height: 92px; resize: vertical; lin
       note: $('#fNote').value.trim().slice(0, 1000),
       url: url,
       fav: $('#fFav').checked,
-      createdAt: existing ? existing.createdAt : Date.now()
+      createdAt: existing ? existing.createdAt : Date.now(),
+      fileName: existing ? existing.fileName : null,
+      fileType: existing ? existing.fileType : null,
+      fileSize: existing ? existing.fileSize : null
     };
     const hadFile = !!(existing && state.fileMeta.has(existing.id));
     const pend = sheetFile.pending, drop = sheetFile.remove && hadFile;
     setErr(''); setSaving(true);
     if (pend) {
-      try { await filePutRec(song.id, pend); }
+      try {
+        const meta = await filePutRec(song.id, pend);
+        if (state.backend === 'db' && meta) { song.fileName = meta.name; song.fileType = meta.type; song.fileSize = meta.size; }
+      }
       catch (e) { setErr(fileErrMsg(e)); setSaving(false); return; }
+    } else if (drop && state.backend === 'db') {
+      song.fileName = null; song.fileType = null; song.fileSize = null;
     }
     try {
       await persist(song);
-      if (drop) dropFile(song.id);
+      if (drop) await dropFile(song.id);
       else if (pend && cur.id === song.id) closePlayer();
       closeSheet();
       toast(existing ? '保存しました' : '追加しました');
       flashRow(song.id);
     } catch (e) {
-      if (pend && !hadFile) { fileDel(song.id).catch(() => {}); state.fileMeta.delete(song.id); }
+      if (pend && !hadFile) { dropFile(song.id).catch(() => {}); state.fileMeta.delete(song.id); }
       setErr(errMsg(e)); setSaving(false);
     }
   }
@@ -852,7 +920,7 @@ textarea.field-ctl { padding: 10px 14px; min-height: 92px; resize: vertical; lin
     try {
       const delId = state.editingId;
       await removeSong(delId);
-      dropFile(delId);
+      await dropFile(delId);
       closeSheet(); toast('削除しました');
     } catch (e) {
       setErr(errMsg(e)); setSaving(false); resetDel();
@@ -889,7 +957,9 @@ textarea.field-ctl { padding: 10px 14px; min-height: 92px; resize: vertical; lin
   }
 
   /* ---------- 曲ファイル（IndexedDB。曲リストとは別にこのブラウザだけに保存） ---------- */
-  const MAX_FILE = 60 * 1024 * 1024;
+  const MAX_FILE_LOCAL = 60 * 1024 * 1024;
+  const MAX_FILE_DB = 50 * 1024 * 1024;
+  function maxFile() { return state.backend === 'db' ? MAX_FILE_DB : MAX_FILE_LOCAL; }
   const EXT_TYPE = { mp3: 'audio/mpeg', m4a: 'audio/mp4', aac: 'audio/aac', wav: 'audio/wav', flac: 'audio/flac', ogg: 'audio/ogg', opus: 'audio/ogg' };
   let dbPromise = null;
   function idb() {
@@ -940,6 +1010,13 @@ textarea.field-ctl { padding: 10px 14px; min-height: 92px; resize: vertical; lin
   }
   function filePutRec(id, f) {
     const type = guessType(f);
+    if (state.backend === 'db') {
+      return state.sb.storage.from(FILE_BUCKET).upload(id, f, { upsert: true, contentType: type })
+        .then((res) => {
+          if (res.error) throw sbErr(res.error);
+          return { name: f.name.slice(0, 200), type: type, size: f.size };
+        });
+    }
     const meta = { name: f.name.slice(0, 200), type: type, size: f.size, addedAt: Date.now() };
     return tx(['blobs', 'meta'], 'readwrite', (t) => {
       t.objectStore('blobs').put(f.slice(0, f.size, type), id);
@@ -951,13 +1028,20 @@ textarea.field-ctl { padding: 10px 14px; min-height: 92px; resize: vertical; lin
   }
   function fileErrMsg(e) {
     if (e && e.name === 'QuotaExceededError') return 'ブラウザの保存容量が足りず、曲ファイルを保存できませんでした。';
+    if (e && e.code === 'invalid_argument') return '曲ファイルを保存できませんでした（アクセス権限を確認してください）。';
+    if (e && e.code === 'db_failed') return '曲ファイルを保存できませんでした。' + (e.message ? '（' + e.message + '）' : '');
     return 'このブラウザでは曲ファイルを保存できませんでした。もう一度お試しください。';
   }
-  function dropFile(id) {
-    if (state.fileMeta.has(id)) { fileDel(id).catch(() => {}); state.fileMeta.delete(id); }
+  async function dropFile(id) {
     if (cur.id === id) closePlayer();
+    if (state.backend === 'db') {
+      try { await state.sb.storage.from(FILE_BUCKET).remove([id]); } catch (e) { /* 無視 */ }
+      return;
+    }
+    if (state.fileMeta.has(id)) { fileDel(id).catch(() => {}); state.fileMeta.delete(id); }
   }
   function loadFiles() {
+    if (state.backend === 'db') return;
     fileList().then((m) => { state.fileMeta = m; render(); })
       .catch(() => { $('#fFileFld').hidden = true; });
   }
@@ -975,18 +1059,25 @@ textarea.field-ctl { padding: 10px 14px; min-height: 92px; resize: vertical; lin
     $('#fFileName').textContent = f ? f.name + '（' + fmtSize(f.size) + '）' : '未選択';
     $('#fFileBtn').textContent = f ? 'ファイルを変更' : 'ファイルを選ぶ';
     $('#fFileClear').hidden = !f;
+    const max = Math.round(maxFile() / (1024 * 1024));
+    if (state.backend === 'db') {
+      $('#fFileHint').textContent = 'mp3・m4a・wavなどの音声ファイル（' + max + 'MBまで）。どの端末からでも聴けます。バックアップには含まれません。';
+    } else {
+      $('#fFileHint').textContent = 'mp3・m4a・wavなどの音声ファイル（' + max + 'MBまで）。このブラウザの中に保存され、バックアップには含まれません。';
+    }
   }
   function checkFile(f) {
     const okType = (f.type && f.type.indexOf('audio/') === 0) || /\.(mp3|m4a|aac|wav|flac|ogg|opus)$/i.test(f.name);
     if (!okType) return '音声ファイル（mp3・m4a・wavなど）を選んでください。';
     if (f.size === 0) return 'ファイルが空です。';
-    if (f.size > MAX_FILE) return '曲ファイルは60MBまでです。';
+    const max = maxFile();
+    if (f.size > max) return '曲ファイルは' + Math.round(max / (1024 * 1024)) + 'MBまでです。';
     return '';
   }
 
   /* ---------- プレーヤー ---------- */
   const audio = $('#audio');
-  let cur = { id: null, url: null };
+  let cur = { id: null, url: null, revoke: false };
   let seeking = false;
   function fmtTime(t) {
     if (!isFinite(t) || t < 0) t = 0;
@@ -1012,14 +1103,10 @@ textarea.field-ctl { padding: 10px 14px; min-height: 92px; resize: vertical; lin
       navigator.mediaSession.setActionHandler('pause', () => { audio.pause(); });
     } catch (e) { /* 無視 */ }
   }
-  async function playSong(id) {
-    if (cur.id === id) { if (audio.paused) audio.play().catch(() => {}); else audio.pause(); return; }
-    let rec;
-    try { rec = await fileGet(id); } catch (e) { toast('曲ファイルを読み込めませんでした。'); return; }
-    if (!rec || !rec.blob) { toast('このブラウザには曲ファイルがありません。'); return; }
-    if (cur.url) URL.revokeObjectURL(cur.url);
-    cur = { id: id, url: URL.createObjectURL(rec.blob) };
-    audio.src = cur.url;
+  async function startPlayback(id, url, revoke) {
+    if (cur.url && cur.revoke) URL.revokeObjectURL(cur.url);
+    cur = { id: id, url: url, revoke: !!revoke };
+    audio.src = url;
     const sg = state.songs.find((x) => x.id === id);
     $('#pTitle').textContent = sg ? sg.title + (sg.artist ? ' / ' + sg.artist : '') : '';
     $('#pSeek').value = 0; $('#pTime').textContent = '0:00 / 0:00';
@@ -1030,11 +1117,25 @@ textarea.field-ctl { padding: 10px 14px; min-height: 92px; resize: vertical; lin
     catch (e) { toast('再生できませんでした。ファイル形式に対応していない可能性があります。'); }
     syncPlay();
   }
+  async function playSong(id) {
+    if (cur.id === id) { if (audio.paused) audio.play().catch(() => {}); else audio.pause(); return; }
+    if (state.backend === 'db') {
+      if (!state.fileMeta.has(id)) { toast('この曲にはファイルがありません。'); return; }
+      const { data } = state.sb.storage.from(FILE_BUCKET).getPublicUrl(id);
+      if (!data || !data.publicUrl) { toast('曲ファイルを読み込めませんでした。'); return; }
+      await startPlayback(id, data.publicUrl, false);
+      return;
+    }
+    let rec;
+    try { rec = await fileGet(id); } catch (e) { toast('曲ファイルを読み込めませんでした。'); return; }
+    if (!rec || !rec.blob) { toast('このブラウザには曲ファイルがありません。'); return; }
+    await startPlayback(id, URL.createObjectURL(rec.blob), true);
+  }
   function closePlayer() {
     audio.pause();
     audio.removeAttribute('src'); audio.load();
-    if (cur.url) URL.revokeObjectURL(cur.url);
-    cur = { id: null, url: null };
+    if (cur.url && cur.revoke) URL.revokeObjectURL(cur.url);
+    cur = { id: null, url: null, revoke: false };
     $('#player').hidden = true;
     document.body.classList.remove('has-player');
     syncPlay();
@@ -1087,7 +1188,10 @@ textarea.field-ctl { padding: 10px 14px; min-height: 92px; resize: vertical; lin
     return d.getFullYear() + p(d.getMonth() + 1) + p(d.getDate());
   }
   function exportText() {
-    return JSON.stringify({ app: 'song-vault', version: 1, exportedAt: new Date().toISOString(), songs: state.songs }, null, 2);
+    const songs = state.songs.map((s) => ({
+      id: s.id, title: s.title, artist: s.artist, tags: s.tags, note: s.note, url: s.url, fav: s.fav, createdAt: s.createdAt
+    }));
+    return JSON.stringify({ app: 'song-vault', version: 1, exportedAt: new Date().toISOString(), songs: songs }, null, 2);
   }
 
   async function doExport() {
@@ -1140,10 +1244,11 @@ textarea.field-ctl { padding: 10px 14px; min-height: 92px; resize: vertical; lin
     if (state.backend === 'db') {
       let done = 0;
       for (const sg of list) {
-        const body = Object.assign({}, sg); delete body.id;
-        try { await state.db.collection('songs').doc(sg.id).set(body); done++; }
-        catch (e) { return { done: done, error: e }; }
+        const { error } = await state.sb.from('songs').upsert(songToRow(sg));
+        if (error) { await refreshSongs(); return { done: done, error: sbErr(error) }; }
+        done++;
       }
+      await refreshSongs();
       return { done: done };
     }
     const next = state.songs.concat(list);
@@ -1325,26 +1430,20 @@ textarea.field-ctl { padding: 10px 14px; min-height: 92px; resize: vertical; lin
   /* ---------- start ---------- */
   loadSort();
   render();
-  loadFiles();
 
   async function init() {
-    let db = null;
-    try {
-      if (window.claude && typeof window.claude.use === 'function') db = await window.claude.use('db');
-    } catch (e) { db = null; }
-    if (db) {
-      state.db = db; state.backend = 'db';
-      db.collection('songs').onSnapshot((snap) => {
-        state.songs = snap.docs.map((d) => clean(d.id, d.data()));
-        state.loaded = true; render();
-      }, () => {
-        state.loaded = true; render();
-        toast('曲リストを読み込めませんでした。ページを開き直してください。');
-      });
+    const sb = createSupabaseClient();
+    if (sb) {
+      state.sb = sb; state.backend = 'db';
+      $('#tipFile').textContent = '追加画面の「曲ファイル」で音声ファイルを選ぶと、リストの再生ボタンで聴けます。どの端末のブラウザからでも同じ曲を再生できます。';
+      $('#tipBackup').textContent = '曲リストと曲ファイルはクラウドに保存され、他の端末でも自動的に反映されます。念のため、左下の「バックアップ」で曲リストをファイルに書き出しておくこともできます。';
+      await refreshSongs();
+      subscribeRealtime();
     } else {
       state.backend = 'local';
       state.songs = readLocal();
       state.loaded = true; render();
+      loadFiles();
     }
   }
   init();
