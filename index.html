@@ -151,6 +151,12 @@ h1 { margin: 0; font-size: 1.9rem; font-weight: 900; letter-spacing: .04em; line
 @media (hover: hover) { .row:hover { background: var(--hover); } }
 .row-main:active { background: var(--hover); }
 .row.flash { animation: flash 2s ease-out; }
+.sort-hint { margin: 0 0 8px; padding: 0 4px; color: var(--muted); font-size: .85rem; line-height: 1.6; }
+.list.sortable .row { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+.list.sortable .row img { -webkit-user-drag: none; pointer-events: none; }
+.row.shifting { transition: transform .16s ease; }
+.row.dragging { position: relative; z-index: 5; background: var(--surface); box-shadow: 0 8px 24px rgba(20, 28, 90, .3); border-radius: 12px; transition: none; }
+body.reordering { -webkit-user-select: none; user-select: none; cursor: grabbing; }
 .row:last-child { border-bottom: 0; }
 .row-main {
   flex: 1; min-width: 0; display: flex; align-items: center; gap: 14px;
@@ -357,12 +363,14 @@ textarea.field-ctl { padding: 10px 14px; min-height: 92px; resize: vertical; lin
         <select id="sort" class="field-ctl">
           <option value="new">新しい順</option>
           <option value="title">名前順</option>
+          <option value="manual">手動</option>
         </select>
       </label>
     </div>
     <div class="chips" id="chips" role="group" aria-label="タグで絞り込み" hidden></div>
   </div>
   <main>
+    <p class="sort-hint" id="sortHint" hidden></p>
     <ul class="list" id="list" hidden></ul>
     <div id="state"></div>
     <p class="foot" id="foot" hidden>このデータは、いま開いているブラウザの中にだけ保存されます。<button id="footBk" class="link" type="button">バックアップをとる</button></p>
@@ -535,7 +543,7 @@ textarea.field-ctl { padding: 10px 14px; min-height: 92px; resize: vertical; lin
     composers: [], albums: [], songs: [],
     loaded: false, backend: null, sb: null,
     nav: { level: 'composers', composerId: null, albumId: null },
-    q: '', sort: 'new', filter: { kind: 'all', tag: '' },
+    q: '', sortBy: { composers: 'title', albums: 'new', songs: 'new' }, filter: { kind: 'all', tag: '' },
     editing: { type: null, id: null },
     busy: new Set(), flash: null, flashScroll: false,
     fileMeta: new Map(), imgMeta: new Map()
@@ -668,6 +676,11 @@ textarea.field-ctl { padding: 10px 14px; min-height: 92px; resize: vertical; lin
   }
 
   /* ---------- data: 共通ヘルパー ---------- */
+  function ord(v) {
+    if (v == null || v === '') return null;
+    const n = Number(v);
+    return Number.isFinite(n) ? n : null;
+  }
   function str(v, max) { return typeof v === 'string' ? v.slice(0, max) : ''; }
   function num(v) { return Number.isFinite(v) ? v : (Number.isFinite(Number(v)) ? Number(v) : 0); }
   function safeUrl(u) {
@@ -690,12 +703,12 @@ textarea.field-ctl { padding: 10px 14px; min-height: 92px; resize: vertical; lin
   /* ---------- data: 作曲者 / アルバム / 曲 ---------- */
   function cleanComposer(id, d) {
     d = d || {};
-    return { id: id, name: str(d.name, 120), note: str(d.note, 2000), createdAt: num(d.createdAt) };
+    return { id: id, name: str(d.name, 120), note: str(d.note, 2000), createdAt: num(d.createdAt), sortOrder: ord(d.sortOrder) };
   }
   function cleanAlbum(id, d) {
     d = d || {};
     return {
-      id: id, composerId: str(d.composerId, 60), name: str(d.name, 120), note: str(d.note, 2000), createdAt: num(d.createdAt),
+      id: id, composerId: str(d.composerId, 60), name: str(d.name, 120), note: str(d.note, 2000), createdAt: num(d.createdAt), sortOrder: ord(d.sortOrder),
       coverName: d.coverName || null, coverType: d.coverType || null, coverSize: Number.isFinite(d.coverSize) ? d.coverSize : null,
       lyricName: d.lyricName || null, lyricType: d.lyricType || null, lyricSize: Number.isFinite(d.lyricSize) ? d.lyricSize : null
     };
@@ -705,43 +718,51 @@ textarea.field-ctl { padding: 10px 14px; min-height: 92px; resize: vertical; lin
     return {
       id: id, albumId: str(d.albumId, 60), title: str(d.title, 120),
       tags: Array.isArray(d.tags) ? d.tags.filter((t) => typeof t === 'string' && t).slice(0, 12).map((t) => t.slice(0, 24)) : [],
-      note: str(d.note, 1000), url: safeUrl(str(d.url, 500)), fav: d.fav === true, createdAt: num(d.createdAt),
+      note: str(d.note, 1000), url: safeUrl(str(d.url, 500)), fav: d.fav === true, createdAt: num(d.createdAt), sortOrder: ord(d.sortOrder),
       fileName: d.fileName || null, fileType: d.fileType || null, fileSize: Number.isFinite(d.fileSize) ? d.fileSize : null,
       coverName: d.coverName || null, coverType: d.coverType || null, coverSize: Number.isFinite(d.coverSize) ? d.coverSize : null,
       lyricName: d.lyricName || null, lyricType: d.lyricType || null, lyricSize: Number.isFinite(d.lyricSize) ? d.lyricSize : null
     };
   }
-  function rowToComposer(row) { return cleanComposer(row.id, { name: row.name, note: row.note, createdAt: row.created_at }); }
-  function composerToRow(c) { return { id: c.id, name: c.name, note: c.note, created_at: c.createdAt }; }
+  function rowToComposer(row) { return cleanComposer(row.id, { name: row.name, note: row.note, createdAt: row.created_at, sortOrder: row.sort_order }); }
+  function composerToRow(c) {
+    const r = { id: c.id, name: c.name, note: c.note, created_at: c.createdAt };
+    if (c.sortOrder != null) r.sort_order = c.sortOrder;
+    return r;
+  }
   function rowToAlbum(row) {
     return cleanAlbum(row.id, {
-      composerId: row.composer_id, name: row.name, note: row.note, createdAt: row.created_at,
+      composerId: row.composer_id, name: row.name, note: row.note, createdAt: row.created_at, sortOrder: row.sort_order,
       coverName: row.cover_name, coverType: row.cover_type, coverSize: row.cover_size,
       lyricName: row.lyric_name, lyricType: row.lyric_type, lyricSize: row.lyric_size
     });
   }
   function albumToRow(a) {
-    return {
+    const r = {
       id: a.id, composer_id: a.composerId, name: a.name, note: a.note, created_at: a.createdAt,
       cover_name: a.coverName, cover_type: a.coverType, cover_size: a.coverSize,
       lyric_name: a.lyricName, lyric_type: a.lyricType, lyric_size: a.lyricSize
     };
+    if (a.sortOrder != null) r.sort_order = a.sortOrder;
+    return r;
   }
   function rowToSong(row) {
     return cleanSong(row.id, {
-      albumId: row.album_id, title: row.title, tags: row.tags, note: row.note, url: row.url, fav: row.fav, createdAt: row.created_at,
+      albumId: row.album_id, title: row.title, tags: row.tags, note: row.note, url: row.url, fav: row.fav, createdAt: row.created_at, sortOrder: row.sort_order,
       fileName: row.file_name, fileType: row.file_type, fileSize: row.file_size,
       coverName: row.cover_name, coverType: row.cover_type, coverSize: row.cover_size,
       lyricName: row.lyric_name, lyricType: row.lyric_type, lyricSize: row.lyric_size
     });
   }
   function songToRow(s) {
-    return {
+    const r = {
       id: s.id, album_id: s.albumId, title: s.title, tags: s.tags, note: s.note, url: s.url, fav: s.fav, created_at: s.createdAt,
       file_name: s.fileName, file_type: s.fileType, file_size: s.fileSize,
       cover_name: s.coverName, cover_type: s.coverType, cover_size: s.coverSize,
       lyric_name: s.lyricName, lyric_type: s.lyricType, lyric_size: s.lyricSize
     };
+    if (s.sortOrder != null) r.sort_order = s.sortOrder;
+    return r;
   }
   function sbErr(error) {
     const msg = (error && error.message) || '';
@@ -807,11 +828,13 @@ textarea.field-ctl { padding: 10px 14px; min-height: 92px; resize: vertical; lin
     state.songs.forEach((s) => { if (s.fileName) m.set(s.id, { name: s.fileName, type: s.fileType, size: s.fileSize }); });
     state.fileMeta = m;
   }
+  let rtTimer = null;
+  function scheduleRefresh() { clearTimeout(rtTimer); rtTimer = setTimeout(() => { refreshAll(); }, 300); }
   function subscribeRealtime() {
     state.sb.channel('vault-sync')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'composers' }, () => { refreshAll(); })
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'albums' }, () => { refreshAll(); })
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'songs' }, () => { refreshAll(); })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'composers' }, scheduleRefresh)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'albums' }, scheduleRefresh)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'songs' }, scheduleRefresh)
       .subscribe();
   }
   function createSupabaseClient() {
@@ -986,17 +1009,29 @@ textarea.field-ctl { padding: 10px 14px; min-height: 92px; resize: vertical; lin
   }
 
   /* ---------- view: 一覧の絞り込み・並べ替え ---------- */
+  function curSort() { return state.sortBy[state.nav.level] || 'new'; }
+  function cmpItems(a, b, key, mode) {
+    if (mode === 'title') return coll.compare(a[key], b[key]);
+    if (mode === 'manual') {
+      const ao = a.sortOrder, bo = b.sortOrder;
+      if (ao != null && bo != null) { if (ao !== bo) return ao - bo; }
+      else if (ao != null) return -1;
+      else if (bo != null) return 1;
+      return (a.createdAt - b.createdAt) || coll.compare(a[key], b[key]);
+    }
+    return (b.createdAt - a.createdAt) || coll.compare(a[key], b[key]);
+  }
   function view() {
     const words = norm(state.q).trim().split(/\s+/).filter(Boolean);
     if (state.nav.level === 'composers') {
       let list = state.composers.filter((c) => !words.length || words.every((w) => norm(c.name + ' ' + c.note).indexOf(w) >= 0));
-      list.sort((a, b) => coll.compare(a.name, b.name));
+      list.sort((a, b) => cmpItems(a, b, 'name', curSort()));
       return list;
     }
     if (state.nav.level === 'albums') {
       let list = state.albums.filter((a) => a.composerId === state.nav.composerId);
       list = list.filter((a) => !words.length || words.every((w) => norm(a.name + ' ' + a.note).indexOf(w) >= 0));
-      list.sort((a, b) => (state.sort === 'title') ? coll.compare(a.name, b.name) : ((b.createdAt - a.createdAt) || coll.compare(a.name, b.name)));
+      list.sort((a, b) => cmpItems(a, b, 'name', curSort()));
       return list;
     }
     let list = state.songs.filter((s) => s.albumId === state.nav.albumId);
@@ -1007,7 +1042,7 @@ textarea.field-ctl { padding: 10px 14px; min-height: 92px; resize: vertical; lin
       const hay = norm([sg.title, sg.note, sg.tags.join(' ')].join(' '));
       return words.every((w) => hay.indexOf(w) >= 0);
     });
-    list.sort((a, b) => (state.sort === 'title') ? coll.compare(a.title, b.title) : ((b.createdAt - a.createdAt) || coll.compare(a.title, b.title)));
+    list.sort((a, b) => cmpItems(a, b, 'title', curSort()));
     return list;
   }
 
@@ -1080,7 +1115,8 @@ textarea.field-ctl { padding: 10px 14px; min-height: 92px; resize: vertical; lin
       if (a && a.note) { noteBox.hidden = false; noteBox.textContent = a.note; } else { noteBox.hidden = true; }
     }
     $('#q').placeholder = state.nav.level === 'composers' ? '作曲者を検索' : (state.nav.level === 'albums' ? 'アルバムを検索' : '曲を検索');
-    $('#sortWrap').hidden = state.nav.level === 'composers';
+    $('#sortWrap').hidden = false;
+    $('#sort').value = curSort();
     $('#add').textContent = state.nav.level === 'composers' ? '作曲者を追加' : (state.nav.level === 'albums' ? 'アルバムを追加' : '曲を追加');
   }
 
@@ -1105,6 +1141,7 @@ textarea.field-ctl { padding: 10px 14px; min-height: 92px; resize: vertical; lin
 
   function renderList() {
     const list = $('#list'), st = $('#state');
+    abortDrag();
     list.replaceChildren(); st.replaceChildren();
     if (!state.loaded) { list.hidden = true; st.append(h('p', { class: 'msg' }, '読み込み中…')); return; }
     const items = view();
@@ -1121,6 +1158,7 @@ textarea.field-ctl { padding: 10px 14px; min-height: 92px; resize: vertical; lin
         h('div', { style: 'text-align:center' }, h('button', { class: 'btn', type: 'button', onclick: clearFilters }, '条件をクリア')));
     }
     $('#foot').hidden = state.backend !== 'local' || total === 0;
+    updateSortHint();
     syncPlay();
   }
   function renderCount() {
@@ -1237,7 +1275,8 @@ textarea.field-ctl { padding: 10px 14px; min-height: 92px; resize: vertical; lin
       id: existing ? existing.id : newId(),
       name: name.slice(0, 120),
       note: $('#cNote').value.trim().slice(0, 2000),
-      createdAt: existing ? existing.createdAt : Date.now()
+      createdAt: existing ? existing.createdAt : Date.now(),
+      sortOrder: existing ? existing.sortOrder : null
     };
   }
 
@@ -1740,10 +1779,10 @@ textarea.field-ctl { padding: 10px 14px; min-height: 92px; resize: vertical; lin
     return d.getFullYear() + p(d.getMonth() + 1) + p(d.getDate());
   }
   function exportText() {
-    const composers = state.composers.map((c) => ({ id: c.id, name: c.name, note: c.note, createdAt: c.createdAt }));
-    const albums = state.albums.map((a) => ({ id: a.id, composerId: a.composerId, name: a.name, note: a.note, createdAt: a.createdAt }));
+    const composers = state.composers.map((c) => ({ id: c.id, name: c.name, note: c.note, createdAt: c.createdAt, sortOrder: c.sortOrder }));
+    const albums = state.albums.map((a) => ({ id: a.id, composerId: a.composerId, name: a.name, note: a.note, createdAt: a.createdAt, sortOrder: a.sortOrder }));
     const songs = state.songs.map((s) => ({
-      id: s.id, albumId: s.albumId, title: s.title, tags: s.tags, note: s.note, url: s.url, fav: s.fav, createdAt: s.createdAt
+      id: s.id, albumId: s.albumId, title: s.title, tags: s.tags, note: s.note, url: s.url, fav: s.fav, createdAt: s.createdAt, sortOrder: s.sortOrder
     }));
     return JSON.stringify({ app: 'song-vault', version: 2, exportedAt: new Date().toISOString(), composers: composers, albums: albums, songs: songs }, null, 2);
   }
@@ -1966,14 +2005,171 @@ textarea.field-ctl { padding: 10px 14px; min-height: 92px; resize: vertical; lin
     q.value = ''; state.q = ''; $('#qClear').hidden = true;
     renderList(); renderCount(); q.focus();
   });
-  $('#sort').addEventListener('change', (e) => { state.sort = e.target.value; saveSort(); renderList(); });
+  $('#sort').addEventListener('change', (e) => { state.sortBy[state.nav.level] = e.target.value; saveSort(); renderList(); });
   function loadSort() {
     try {
-      const v = localStorage.getItem(SORT_KEY);
-      if (v === 'new' || v === 'title') { state.sort = v; $('#sort').value = v; }
+      const raw = localStorage.getItem(SORT_KEY);
+      if (!raw) return;
+      const ok = (v) => v === 'new' || v === 'title' || v === 'manual';
+      if (ok(raw)) { state.sortBy.albums = raw; state.sortBy.songs = raw; return; } // 以前の保存形式
+      const d = JSON.parse(raw);
+      ['composers', 'albums', 'songs'].forEach((k) => { if (d && ok(d[k])) state.sortBy[k] = d[k]; });
     } catch (e) { /* 保存された並び順が読めなくても続行 */ }
   }
-  function saveSort() { try { localStorage.setItem(SORT_KEY, state.sort); } catch (e) { /* 無視 */ } }
+  function saveSort() { try { localStorage.setItem(SORT_KEY, JSON.stringify(state.sortBy)); } catch (e) { /* 無視 */ } }
+
+  /* ---------- 並べ替え（長押ししてドラッグ） ---------- */
+  const LONG_PRESS_MS = 380, MOVE_TOLERANCE = 10;
+  function reorderOk() {
+    return state.loaded && curSort() === 'manual' && !state.q.trim() && state.filter.kind === 'all';
+  }
+  function updateSortHint() {
+    const el = $('#sortHint'), list = $('#list');
+    const manual = curSort() === 'manual';
+    list.classList.toggle('sortable', reorderOk());
+    if (!manual || list.hidden) { el.hidden = true; return; }
+    el.hidden = false;
+    el.textContent = reorderOk()
+      ? '並べ替えたい行を長押しして、そのまま上下にドラッグしてください。'
+      : '検索や絞り込みを解除すると、並べ替えできます。';
+  }
+  async function applyOrder(level, ids) {
+    const arr = level === 'composers' ? state.composers : (level === 'albums' ? state.albums : state.songs);
+    const byId = new Map(arr.map((x) => [x.id, x]));
+    const prev = [], changed = [];
+    ids.forEach((id, i) => {
+      const it = byId.get(id);
+      if (it && it.sortOrder !== i + 1) { prev.push([it, it.sortOrder]); it.sortOrder = i + 1; changed.push(it); }
+    });
+    render();
+    if (!changed.length) return;
+    try {
+      if (state.backend === 'db') {
+        const table = level === 'composers' ? 'composers' : (level === 'albums' ? 'albums' : 'songs');
+        const conv = level === 'composers' ? composerToRow : (level === 'albums' ? albumToRow : songToRow);
+        const { error } = await state.sb.from(table).upsert(changed.map(conv));
+        if (error) throw sbErr(error);
+      } else {
+        writeLocalAll();
+      }
+    } catch (e) {
+      prev.forEach((p) => { p[0].sortOrder = p[1]; });
+      render();
+      const m = (e && e.message) || '';
+      toast(/sort_order|column/i.test(m) ? '並び順を保存できませんでした。Supabaseで並び順用のSQLを実行してください。' : errMsg(e));
+    }
+  }
+
+  let dragSt = null, suppressClickUntil = 0;
+  function abortDrag() {
+    if (!dragSt) return;
+    clearTimeout(dragSt.timer); cancelAnimationFrame(dragSt.raf);
+    document.body.classList.remove('reordering');
+    dragSt = null;
+  }
+  function startDrag() {
+    const s = dragSt;
+    if (!s || s.active) return;
+    clearTimeout(s.timer);
+    const list = $('#list');
+    const rows = Array.from(list.children).filter((n) => n.tagName === 'LI');
+    const idx = rows.indexOf(s.li);
+    if (idx < 0) { dragSt = null; return; }
+    s.rows = rows; s.idx = idx; s.target = idx;
+    s.startScroll = window.scrollY;
+    s.startY = (s.cy != null) ? s.cy : s.y;
+    s.tops = rows.map((r) => { const b = r.getBoundingClientRect(); return { mid: b.top + b.height / 2 + window.scrollY, h: b.height }; });
+    s.gap = s.tops[idx].h;
+    s.active = true;
+    rows.forEach((r, j) => { if (j !== idx) r.classList.add('shifting'); });
+    s.li.classList.add('dragging');
+    document.body.classList.add('reordering');
+    try { s.li.setPointerCapture(s.pointerId); } catch (e) { /* 無視 */ }
+    if (navigator.vibrate) { try { navigator.vibrate(12); } catch (e) { /* 無視 */ } }
+    s.raf = requestAnimationFrame(dragTick);
+  }
+  function moveDrag() {
+    const s = dragSt;
+    if (!s || !s.active || s.cy == null) return;
+    const dy = s.cy - s.startY + (window.scrollY - s.startScroll);
+    s.li.style.transform = 'translateY(' + dy + 'px)';
+    const center = s.tops[s.idx].mid + dy;
+    let t = 0;
+    s.tops.forEach((p, j) => { if (j !== s.idx && p.mid < center) t++; });
+    s.target = t;
+    s.rows.forEach((r, j) => {
+      if (j === s.idx) return;
+      let sh = 0;
+      if (s.idx < j && j <= t) sh = -s.gap;
+      else if (t <= j && j < s.idx) sh = s.gap;
+      r.style.transform = sh ? 'translateY(' + sh + 'px)' : '';
+    });
+  }
+  function dragTick() {
+    const s = dragSt;
+    if (!s || !s.active) return;
+    if (s.cy != null) {
+      const top = Math.max($('#bar').getBoundingClientRect().bottom, 0) + 40;
+      const bottom = window.innerHeight - 110;
+      let v = 0;
+      if (s.cy < top) v = -Math.min(18, (top - s.cy) / 4 + 4);
+      else if (s.cy > bottom) v = Math.min(18, (s.cy - bottom) / 4 + 4);
+      if (v) { window.scrollBy({ top: v, left: 0, behavior: 'instant' }); moveDrag(); }
+    }
+    s.raf = requestAnimationFrame(dragTick);
+  }
+  function endDrag(commit) {
+    const s = dragSt;
+    if (!s) return;
+    clearTimeout(s.timer); cancelAnimationFrame(s.raf);
+    dragSt = null;
+    if (!s.active) return;
+    suppressClickUntil = Date.now() + 500;
+    document.body.classList.remove('reordering');
+    try { s.li.releasePointerCapture(s.pointerId); } catch (e) { /* 無視 */ }
+    s.rows.forEach((r) => { r.style.transition = 'none'; r.style.transform = ''; r.classList.remove('dragging', 'shifting'); });
+    requestAnimationFrame(() => { s.rows.forEach((r) => { r.style.transition = ''; }); });
+    if (!commit || s.target === s.idx) return;
+    const ids = s.rows.map((r) => r.dataset.id);
+    const moved = ids.splice(s.idx, 1)[0];
+    ids.splice(s.target, 0, moved);
+    applyOrder(state.nav.level, ids);
+  }
+  function initReorder() {
+    const list = $('#list');
+    list.addEventListener('pointerdown', (e) => {
+      if (dragSt || !reorderOk()) return;
+      if (e.pointerType === 'mouse' && e.button !== 0) return;
+      const li = e.target.closest ? e.target.closest('li.row') : null;
+      if (!li || li.parentNode !== list) return;
+      dragSt = { li: li, pointerId: e.pointerId, pointerType: e.pointerType, x: e.clientX, y: e.clientY, cx: e.clientX, cy: e.clientY, active: false, timer: null, raf: 0 };
+      dragSt.timer = setTimeout(startDrag, LONG_PRESS_MS);
+    });
+    document.addEventListener('pointermove', (e) => {
+      const s = dragSt;
+      if (!s || e.pointerId !== s.pointerId) return;
+      s.cx = e.clientX; s.cy = e.clientY;
+      if (!s.active) {
+        if (Math.hypot(s.cx - s.x, s.cy - s.y) > MOVE_TOLERANCE) {
+          if (s.pointerType === 'mouse') { startDrag(); moveDrag(); }   // マウスは動かした時点で開始
+          else { clearTimeout(s.timer); dragSt = null; }                // タッチは通常のスクロールとして扱う
+        }
+        return;
+      }
+      e.preventDefault();
+      moveDrag();
+    });
+    document.addEventListener('pointerup', (e) => { if (dragSt && e.pointerId === dragSt.pointerId) endDrag(true); });
+    document.addEventListener('pointercancel', (e) => { if (dragSt && e.pointerId === dragSt.pointerId) endDrag(false); });
+    // ドラッグ中は画面がスクロールしないようにする
+    document.addEventListener('touchmove', (e) => { if (dragSt && dragSt.active && e.cancelable) e.preventDefault(); }, { passive: false });
+    list.addEventListener('contextmenu', (e) => { if (dragSt) e.preventDefault(); });
+    // ドラッグ後に指を離したとき、行が開いてしまうのを防ぐ
+    list.addEventListener('click', (e) => {
+      if (Date.now() < suppressClickUntil) { e.stopPropagation(); e.preventDefault(); }
+    }, true);
+  }
+  initReorder();
 
   /* 検索バーが固定されたときだけ下線を出す */
   const bar = $('#bar');
