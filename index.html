@@ -317,30 +317,46 @@ textarea.field-ctl { padding: 10px 14px; min-height: 92px; resize: vertical; lin
   --img-face: url("data:image/webp;base64,UklGRr4TAABXRUJQVlA4ILITAACQSACdASqwALAAPmEqkUYkIqGhKlXMGIAMCWMG+OenT1coqykp/A86fMwBe+8fL9Iu3A8y3m1eljeYP3D4IP/A2u01e1l/SeX7l37GNSn5b+Lv5n9/4z+AL7e3kkAn117/3VK8K+wB+pvjfeIT597Av9B/wP/e9UjP09VftP8Bn82/vHWh9Ir9nkRF3PXD6fQy//v7uiZDEs36GC7uRIpcSE44p4kYTc0Etn6emAS3z/V5Wx0w+5dTCEX1I+9IAZm8hWB5AVqsOQKj4wFXBxjkd9dBWom9UKDNYKjxyz1abAVulYXsf/Ee2NriJRCiCGLKRYzDZpTmcIbQ2NfmMw2zOrLmH4L9cmLtrWJ/7q4vskCxUeGK5/b8l9bikER9py31322KvRbpr5iEVoOXhp8SwUh4dxWDxTVfGsWfR3WHbuWWnrHuGwZYU3AKBp/P1sZ3fP/mpUKyF1P92gSdNu13D06vDwqemesdGaLMIj+HMP1mBMa+qGBCKpHphAbAjycKr9buv2RpPVgER6WbkUhpWJwH4Qy7j3iZBshGjkpVrXS9rN2VVi2FsIhbXpE4i2roOz7Ez60+euSjuTMujRTbHGhVk0exDK5kMPKVLFjjBR9DiKmfVQjSbybRU/vjG0rb9GGHz1Xc03nrw9o/7z7LzBwidYY9NCB9jpppY5/o87Z2Vtbpd77MPXgeIfXAzZjnNrI0DH9hIZWysNqUvpWLpWZWRD42ftJ+eBqtfzuu9sQoMbfCVk1+q09+w/ZW0IHcL3/JjGVmtJ9WYHFIAP72hwx984m5hTn2Ze1OlS+TBcdXIo8wEfmF+bniDCj7gB8U3yUT/ZuCw/BwBVCZ+chF+EzYu5tI892BQDeIC8jwqxm+2DhG4BeSRh+wToXO8x2sbZIG7lYe/lmc9j0smCYKUTAndp3u5E8Ml14Oh0TjL8LqULt8qfsyrZjeWNbNWtKTj6hY//qoRlrIU+Pzvpvl/cuQJ7l4hKvE+iBicAlR+w3NMs957JaDD7uBZAx70BokIq53PmOb3C1VsT9DnJUgmM3pLhT4jod1qobmrVK7q8aG/cCBZrdo2FS4E99kwG30qSw5RpVmBwL6mpZqqWfa3p6ZCskhttXA/04QOfZ3o56J/+AXcDzn+PDBFC/I496blAfBYSRA/fKN9yjRVZiALrljFK5PWIymrEOCRnTHjmEH54CKRipw2pH4IHuovHfUmos2TVC2VVnMRQBvhydU5Olvm2KoUAJR/kD3Q/UxWAGRFv/beogESN4PTjahPy7eXTZ2rujLTQ/ee5W0yqdfkQxRJrrSYPo1C+BcyOMCFgJ7Ge9/qXY2G3LUlaS6qCyhx8H0ykedDe+LY3XTr/U/IRM8Jz0Ebl81iZtRe5OoI59tjCJS4CAIhEjC6Y4wdZn9sbSeatJqxQgKJgg5jLgKAdEWRGeT+il/S+s08FtcEAqpFMIbpIK+BCefM6QppggYmt0ga3/dzJYyDuieGWV8DIzcpgnDEdKwjeC6dN30bo/vSTEcz97y7mwWgQDaMz5dP6Xgl/r7+M8vB5cUMCZdlIz4dQxhVDNF8JkCti8vNrvHgMkTLZr4oF2kVBbvfbUjNMS2Gr6tSsNjhcpb7f6/Fs0DFohsj9omcDPaPPmUZTli6HA6D530tZJJf/91lYXXFaqEZDipo0lH6GII50KcjU49ysZt1sHYbzSj6sMVwM8KMkYZKnWBTrPNNeqx5Wq1JFkKsKOK4zeQP81/M3yTtUpimziGOHXsWensvxbr/w5q+G6D4iW7ZNRcW3zzowaKRM30SuAGMy2yRA5OAit02gJEmzqJ+f5dNRNU2a9Y6MUCfomTD75DLyQs4S9uUZc4lght0mEmqmzYR2gIcGAcUjFSpv3Yuc2ash26n/DayJDuj4CXD2W7lafBMwpZsLEagn5nHsukigtNmlDI8CAgeeiAy8sk3ubGjFwY0bq8NrQR/pcz2OQKJRs3SJiaOdE3Rxjnj0dMCNBL4y239roiUZLgSrufcfDojyC3FJ8xsCwjrO2xNlBFbAuXUY4h/RtBWbJNZjf8lkXqU+IotUqUZHbtF5ghRi0DPQ0VNKI/AdfwTIB7PMogRj0A1csTIYiUfZaI028ZJBPF+OaDcHjkpU66GDMYeRh5wuoGZkVBBNJobIvzgSqjdsmtbgOD0UaqEaQLCnys1yWdknIr/fQPbD5beIr5ZOwx2prVYmWorPgxdxiZP2aRT/vsHzY8W5HPU+Ts2Q1q8VmV9p7HAHklb7q64U8Ra6H6sbX10akhMmaIuOrb/+UJ4OBzWndqyIt76XM02YTwsuPRwxf2CaQfdGi1H7n1F8mUzl6ppnefnHNaouyTVhucTH3RD93DL5/NclyVtprqWg/UfyrDBtU3zHrxVo64cNezcTm/2GNfjVuGPRALqGCGDfGgbInazF7EWeVwzelgXjfe1B7WJhGNqomidvjSX6yb1IXJ4E99XC9c0ebJHb614BJiCPeahMkKHK2ga7mNEnWXLMAo7GtB4k8UWOArkCxj1eYwlZ1fBx1y70ZubYpn6XUX7yFvK2fEEkBsLeMuWDofI6ytF6eOsBeuGTFOSXhUkCmBwnJ4QDfiKBEixo+oTNPXMdJuFnbLqe1gsvwctWlhuc15d1nuByL5quPB8EhGDV7f5OTDb77LNf884yIRQiuSh74+7MgNLONfGGS7fSiHNWXBGIBBd2GMM6uUm+mvm+pZ7qZ0WsYEe+pStFmmaCVnSTNuhrOdk5SReqTyKoNQyxSi7qrX9KxalPhqMDWi+5wJy5BKN1FlWfM8Y8ZVArzB5TO3UNj8OVJ3bBD01qLaBmLZeOMQIm5My5Goe1aRtxtQO90nHEeojyFcBaKo/rtgSoAerec0Z1rbPEHESZvHM35M/c6GQB9lL8QllYBVQmiCJwpIpqkQVLpxmpmKAIm9+Um/3jFOkyw6CWpuWTk/ySbtwu0GOkczmFFG3w8sth0qeXU+aM9/QcJu9z/Ad+f7B0f6SiqevaU9HilCJjZgNAvZmdttTQJfL6gtN2JLOO0bEALCIGjYB0jm++SqLG7IGXLZxdI8ScWF4JBidXfOHj1zOajWAG3S/eKscUw4//HJ4ioSMelqUZE7KCZReNmKl3ZD9BTUs/QABZOZvesnJjLHb6MD4u4UKRXd6r4SW/iXFm7ELJKMtmjXuk8vkdxRbw0j7zYMJxBxrLPBONEhMZrIbwgtBe2WYa9rPk88+s5BaJZlgOx+RhBl3W6e3v/XwmqKU2W9poRgm4472qcFsA14gtB67VJcno/+IPFPIFObIhvvDS8onZetqYL2Lv+WOhpea4cpIvEquAG1kMjPSNu7G5e3fwfcODy1kPFPkveZwPU64wTi0JUFl1UMe+0kwwPJrJIrF6tO/S9+KTvQ9mP3mwu9ebyhUH2XF683AL3FMzSPRreYDdVsz0IaSRyRMsO+AIr0VAYliiRJY3nREcWYCY990CjDKq0Wrb0gQCj24OMxs7Pg7VPVdHsAT1m/WmqLDYCyakDR0bebvox0EypN8T6xV87mRElU3+aQVZdCjsH/aIfUPoBwNZzsSXSDXR4xNULq3eJzZbuV5WfbTRUsuPIlwUg5UFKXPGzOA6UNzcDVLpkyBIJL8dLdNv9/MrgFM7nJ3nSYRZ0K9Je6phXY/LueuorSWREWE9lhoK5/ByMTaSS5xGHMh11eSA5JIvtCcPGcZ/fDkIQNuMBiNXjA2j3JHI8f3O7OtnyMfkQ7vnQvxT4metcqOz01Kdql0bi08y6+QniDX+BykU6J9KR+Coyw/bT1+apcBz6qCUfhxEOZFRN0lWkMOXnXnp4YPLExALpXBaKAS/5SjlsnTaTcBYgYFLrpmDgghtcitFw6GWVOK+jMbaB9ToCp4pMKV8rAwRgo5vXfkHMwFYeS/XfYPk0u8MdAGnOyAmsHjBprDFjv7QTAx68jYNgJpGkYSkdvyw+qMkN4X4ywa0wIWVgULHT4qiGauCUrxRPBAZOyWgnYdAb2N7GkCKrg8VdRIQ8BUBMwpDyvJD/Ic6LcrtRElfPOvhfE3vJ6LdkDCDeuRuN4VhvTrrl2UIRvJ7S3z1mhfIBrzyk1YPAEtyajgw4PAPiAi0Fxzdmf7gnEh1YWf4/KHyMyf/ZYUaurPFfiz/pVIb/Vq6Vfb+sWHEjzvWSYnpjnv6tIYQcetfr5jKXJh+CBfo9UWcW5kf/VvqO5OnsFg2byZkSNwwXZ9WRW0nkUoQnK4EG3lOR8YEGmkNupbdHPASQxmRRIL4t1rp4z3FV20VeODvPUYGFpaLGN9Supi/gtg4bzBn+hcckjQfzklNPp+k9bEllY+ZCmQ3pXFK9MfAiz91otV0LFkcujno/2roApe5zcr3qb/jKra6Z/XjlW6FQ2saGo2LKCFxACAimhHZfxGIbUIVQZL0kkxngRS/bC9YIc0IKDAaqlNOugm/HZfSZitohtNKZbpeE/ZGNyRZm/564BQGJIiomCv+CfhZs8pmaqmpX5t8Eo2Myo4qjfpyM9AfjJbbag8/N2noBsyjoHICAwd1rPmIgSy8xmbhyjYXoY6OHA+TLo9LsAnyp0UwqVR3kmN4G2oRaJCbyKOtSd3sA9fl9i5CqPlnZ1CGfM1MjDMProXvuISIa79SPsTuVjH8T08ff/SodMRzZqXP1Q7N9j0wByEDDBVnmdhaM0U4f+/2yYRoqyCIwVZt35w+0e8IWYOc3tv495oWIR+wZCMCJrRtFUq6vnpe+Fvnk2aktmcZ91rw+6kEtfh19rJ9/B9IJphx1WZkeZ7zATrnYmB5rEsNnelhFJ6I8qJqs7RiJMHL86/zzxX1bdw7qv+TEHI4+02PrGMffzicC61XbZ0IFwauwtGu3pvpVJccPP6o0vVy9W6ZN6GmVF1NLOhUE5a+XX5dgT/SrfASUiLSZwZZS7po2P0PuNeW1Upa0LrY+pdZ8HLFZyXdiHfjD/EPN9nYCydcnz/l+/sTCZX3Qf+o5KhVsWVqlr5kRZF2OQZoxfE8b3Wp4Nrj6flqiuMxtOYe9QDFvCW9eV21jpCjXosAmDBd3SWiQdFaSrtIYpajVcq0ADuM8rhiwvfdEsuCUc+PNIgL0/7PkQyc8Tcr21Dn8uPNjIQWiwfoqH9Yv2O9OtlzjF2/Fny5UcVVIPLGIxfZxZWtFjtCrKspP/1naR3fg1jN3WTzgZ3Yqd72w3nRmKXR6/ku7bXSWc0rMVqshaqg004y8dI4qkttEEMzLIS9O6LjzvogaGoRbXOENw7QEE5z1sA4Ge+7C5ptxyTXEw6sGVUKdMD2InjZK1VLifHmYlPWTnSnfW8TPpLaAn71TD2R8lKUAGfUpsq4ti/WwnTJkF3q/detZuPISiesUkEFVP5jFBwC8ebpOl1wP/VlsTRUDyYGgVlkw5VtaQuBZHUXWnyhnNG0S6zRBsLYZWks5nk04KQI6gD336tMsMve5xdsZ0d9HA3gX0DwBuQAuckswv/beTm1Vo2fIkng3WAwbjWtdwzk3PHMlhEKJNy8+9ypEF2EY7O8URYXMfc4U2xvzNfu6v7K/dgXZcIrPfzKZ4Q3/6EnFdVTeO1vL7KoK9/ay6Vk3Dh31cvYEW0l3HqjCwvnp+cPeGxrRo+VJmNSJl3ekbIR2F41eROnIN5+VcqZbw4jm9iuNirzoVPuBu6jp1tsjWms+lXIAtTzQlynTviHBLkOnXmIqiZLnEtPqsac9dIcwaH5wmMm1NeyCzoyAAS50YdDJ7weeB3mWbnvGV81Q+hR58I5TvQ2uihMnCa58e5fvwZlnbqTlbqDCWdX3BSuhJ/qPbc17rt1b6htFov4fxWF2RDSdccYBXGTvn82iKU00Q6uYZnpUc6sP7FGxp9ifT6YUNbg30+qtS02+LfuVC0iObnqlRyXHtjsINtVom0uv42TItMUQzelTMoXttL6RYwdgALyogYnx4j6BiN5d2ycUUI25IuM3iAsZx7/9uCKDROjEtx00bc0bnMR/Lt9JpnnarZQZaZg7vtMN02hOs2WOdK6o/3kLOwAunersen5FmX8hu0pRTmBK1hgDxXWmCEQd+7BvUw+K06daKViwN0JZ9Hl2kOEDU9uIUli8c+DHPKVt9q/ybSDZ/KDUc3JElx4CoW8X3yiYWjrQWLij61uPxBRV2OKF3CQ/ntLc/Wvd946YESxbYopFi4JQEbj4OyI/Zb/YJy7pVckMmRLCDStEX4KeCVIe0J2CGccYgqdLOaoIfpjyxWsGlq2vVyWG25hKGeFABnj5glW0PBZP5Ny1zshEWrxoPqWpWRS3f6xp8Owh+iJvFd+DqCnXzl48UewzfeS0Ua1FXaeyfgCyJYFELbFmiELJrpPclubp6YZwvT84wE6cvwezin1LjjHrSxeqEJPuk2JAfBzeA9GcG7w1VbQwyML+lUo6gC/e0/cLVs/We5GwEqysMz0hmx2iivmfwZ8Jpi59V8ULtggau0/Wejza1xIgY6+xA9Gu6B+Bxacck/wbTBa3paberEbh/WxCN3ZQA8Y1Yo5ODFa6grus3POnqXBMTx5SziFPjF5ZVVTOCyv8dqMW84rtOIiaoY7uHq+r69VWRuCcIuYLz58pFutQIITitqR5LFk1tcdAvMahh2pEA8ria8ihWpqfXto7UIMtt6rbhFHEJ49Gl1yqy4EJvr5kNkJYrPnPd1IexRuVVp+CgDHS9NnwZbu94xOiEecZiaAigAA==");
 }
 </style>
+<style>
+/* 追加：階層ナビ用 */
+.head-l { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.head-l h1 { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+#back { padding: 0 12px; flex: none; }
+#back svg { display: block; }
+.note-box {
+  margin: 0 0 10px; padding: 12px 14px; background: var(--surface); border: 1px solid var(--line);
+  border-radius: 14px; color: var(--muted); font-size: .9rem; line-height: 1.7; white-space: pre-wrap; word-break: auto-phrase;
+}
+.cover.img { object-fit: cover; background: var(--chip); }
+.filebox + .filebox { margin-top: 8px; }
+</style>
 </head>
 <body>
 <div class="backdrop" aria-hidden="true"></div>
 <div class="app">
   <header class="head">
-    <h1>楽曲保管庫</h1>
+    <div class="head-l">
+      <button id="back" class="help" type="button" hidden aria-label="戻る">← 戻る</button>
+      <h1 id="h1">楽曲保管庫</h1>
+    </div>
     <div class="head-r">
       <p class="count" id="count" aria-live="polite"></p>
       <button id="help" class="help" type="button">使い方</button>
     </div>
   </header>
+  <p class="note-box" id="noteBox" hidden></p>
   <div class="bar" id="bar">
     <div class="tools">
       <div class="search">
-        <label class="sr" for="q">曲を検索</label>
-        <input id="q" class="field-ctl" type="search" placeholder="曲を検索" autocomplete="off" enterkeyhint="search">
+        <label class="sr" for="q">検索</label>
+        <input id="q" class="field-ctl" type="search" placeholder="検索" autocomplete="off" enterkeyhint="search">
         <button id="qClear" class="clear" type="button" aria-label="検索をクリア" hidden><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
       </div>
-      <label class="sort">
+      <label class="sort" id="sortWrap">
         <span class="sr">並べ替え</span>
         <select id="sort" class="field-ctl">
           <option value="new">新しい順</option>
-          <option value="title">曲名順</option>
-          <option value="artist">アーティスト順</option>
+          <option value="title">名前順</option>
         </select>
       </label>
     </div>
@@ -349,11 +365,11 @@ textarea.field-ctl { padding: 10px 14px; min-height: 92px; resize: vertical; lin
   <main>
     <ul class="list" id="list" hidden></ul>
     <div id="state"></div>
-    <p class="foot" id="foot" hidden>この曲リストは、いま開いているブラウザの中にだけ保存されます。<button id="footBk" class="link" type="button">バックアップをとる</button></p>
+    <p class="foot" id="foot" hidden>このデータは、いま開いているブラウザの中にだけ保存されます。<button id="footBk" class="link" type="button">バックアップをとる</button></p>
   </main>
 </div>
 
-<div class="fab-wrap"><div class="fab-inner"><button id="backup" class="fab secondary" type="button">バックアップ</button><button id="add" class="fab" type="button">曲を追加</button></div></div>
+<div class="fab-wrap"><div class="fab-inner"><button id="backup" class="fab secondary" type="button">バックアップ</button><button id="add" class="fab" type="button">追加</button></div></div>
 
 <div id="player" class="player" hidden>
   <div class="player-inner">
@@ -373,25 +389,73 @@ textarea.field-ctl { padding: 10px 14px; min-height: 92px; resize: vertical; lin
 <div id="overlay" class="overlay" hidden>
   <div class="sheet split" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
     <div class="sheet-body">
-    <h2 id="sheetTitle">曲を追加</h2>
-    <label class="fld"><span>曲名</span><input id="fTitle" class="field-ctl" type="text" maxlength="120" autocomplete="off"></label>
-    <label class="fld"><span>アーティスト</span><input id="fArtist" class="field-ctl" type="text" maxlength="120" autocomplete="off" list="artistList"></label>
-    <datalist id="artistList"></datalist>
-    <label class="fld tight"><span>タグ</span><input id="fTags" class="field-ctl" type="text" placeholder="例：作業用, ゲームBGM" autocomplete="off"><small>カンマか空白で区切ります</small></label>
-    <div class="tagsug" id="tagSug" role="group" aria-label="登録済みのタグから選ぶ"></div>
-    <label class="fld"><span>リンク</span><input id="fUrl" class="field-ctl" type="url" inputmode="url" placeholder="https://" autocomplete="off"></label>
-    <div class="fld" id="fFileFld">
-      <span id="fFileLbl">曲ファイル</span>
-      <div class="filebox">
-        <button id="fFileBtn" class="btn" type="button" aria-describedby="fFileLbl">ファイルを選ぶ</button>
-        <span class="filename" id="fFileName">未選択</span>
-        <button id="fFileClear" class="link" type="button" hidden>外す</button>
-      </div>
-      <small>mp3・m4a・wavなどの音声ファイル（60MBまで）。このブラウザの中に保存され、バックアップには含まれません。</small>
-      <input id="fFile" type="file" accept="audio/*,.mp3,.m4a,.aac,.wav,.flac,.ogg,.opus" hidden>
+    <h2 id="sheetTitle">追加</h2>
+
+    <div id="fldsComposer">
+      <label class="fld"><span>作曲者名</span><input id="cName" class="field-ctl" type="text" maxlength="120" autocomplete="off"></label>
+      <label class="fld"><span>説明文</span><textarea id="cNote" class="field-ctl" maxlength="2000"></textarea></label>
     </div>
-    <label class="fld"><span>メモ</span><textarea id="fNote" class="field-ctl" maxlength="1000"></textarea></label>
-    <label class="check"><input id="fFav" type="checkbox"><span>お気に入りにする</span></label>
+
+    <div id="fldsAlbum">
+      <label class="fld"><span>アルバム名</span><input id="alName" class="field-ctl" type="text" maxlength="120" autocomplete="off"></label>
+      <label class="fld"><span>説明文</span><textarea id="alNote" class="field-ctl" maxlength="2000"></textarea></label>
+      <div class="fld" id="alCoverFld">
+        <span id="alCoverLbl">ジャケット画像</span>
+        <div class="filebox">
+          <button id="alCoverBtn" class="btn" type="button" aria-describedby="alCoverLbl">画像を選ぶ</button>
+          <span class="filename" id="alCoverName">未選択</span>
+          <button id="alCoverClear" class="link" type="button" hidden>外す</button>
+        </div>
+        <input id="alCoverFile" type="file" accept="image/*" hidden>
+      </div>
+      <div class="fld" id="alLyricFld">
+        <span id="alLyricLbl">歌詞カード画像</span>
+        <div class="filebox">
+          <button id="alLyricBtn" class="btn" type="button" aria-describedby="alLyricLbl">画像を選ぶ</button>
+          <span class="filename" id="alLyricName">未選択</span>
+          <button id="alLyricClear" class="link" type="button" hidden>外す</button>
+        </div>
+        <input id="alLyricFile" type="file" accept="image/*" hidden>
+      </div>
+    </div>
+
+    <div id="fldsSong">
+      <label class="fld"><span>曲名</span><input id="fTitle" class="field-ctl" type="text" maxlength="120" autocomplete="off"></label>
+      <label class="fld tight"><span>タグ</span><input id="fTags" class="field-ctl" type="text" placeholder="例：作業用, ゲームBGM" autocomplete="off"><small>カンマか空白で区切ります</small></label>
+      <div class="tagsug" id="tagSug" role="group" aria-label="登録済みのタグから選ぶ"></div>
+      <label class="fld"><span>リンク</span><input id="fUrl" class="field-ctl" type="url" inputmode="url" placeholder="https://" autocomplete="off"></label>
+      <div class="fld" id="fFileFld">
+        <span id="fFileLbl">曲ファイル</span>
+        <div class="filebox">
+          <button id="fFileBtn" class="btn" type="button" aria-describedby="fFileLbl">ファイルを選ぶ</button>
+          <span class="filename" id="fFileName">未選択</span>
+          <button id="fFileClear" class="link" type="button" hidden>外す</button>
+        </div>
+        <small id="fFileHint">mp3・m4a・wavなどの音声ファイル。このブラウザの中に保存され、バックアップには含まれません。</small>
+        <input id="fFile" type="file" accept="audio/*,.mp3,.m4a,.aac,.wav,.flac,.ogg,.opus" hidden>
+      </div>
+      <div class="fld" id="sgCoverFld">
+        <span id="sgCoverLbl">ジャケット画像</span>
+        <div class="filebox">
+          <button id="sgCoverBtn" class="btn" type="button" aria-describedby="sgCoverLbl">画像を選ぶ</button>
+          <span class="filename" id="sgCoverName">未選択</span>
+          <button id="sgCoverClear" class="link" type="button" hidden>外す</button>
+        </div>
+        <input id="sgCoverFile" type="file" accept="image/*" hidden>
+      </div>
+      <div class="fld" id="sgLyricFld">
+        <span id="sgLyricLbl">歌詞カード画像</span>
+        <div class="filebox">
+          <button id="sgLyricBtn" class="btn" type="button" aria-describedby="sgLyricLbl">画像を選ぶ</button>
+          <span class="filename" id="sgLyricName">未選択</span>
+          <button id="sgLyricClear" class="link" type="button" hidden>外す</button>
+        </div>
+        <input id="sgLyricFile" type="file" accept="image/*" hidden>
+      </div>
+      <label class="fld"><span>メモ</span><textarea id="fNote" class="field-ctl" maxlength="1000"></textarea></label>
+      <label class="check"><input id="fFav" type="checkbox"><span>お気に入りにする</span></label>
+    </div>
+
     </div>
     <div class="sheet-foot">
       <p class="err" id="fErr" role="alert"></p>
@@ -407,7 +471,7 @@ textarea.field-ctl { padding: 10px 14px; min-height: 92px; resize: vertical; lin
 <div id="bkOverlay" class="overlay" hidden>
   <div class="sheet" id="bkSheet" role="dialog" aria-modal="true" aria-labelledby="bkTitle">
     <h2 id="bkTitle">バックアップ</h2>
-    <p class="sub">曲リストをJSONファイルに書き出して保管できます。別の端末やブラウザで読み込むと、同じ曲を追加できます。アップロードした曲ファイルは含まれません。</p>
+    <p class="sub">作曲者・アルバム・曲のデータをまとめてJSONファイルに書き出せます。別の端末やブラウザで読み込むと、同じ内容を追加できます。アップロードした曲ファイルや画像は含まれません。</p>
     <p class="sub" id="bkCount"></p>
     <div class="stack">
       <button id="bkExport" class="btn primary" type="button">ファイルに書き出す</button>
@@ -433,12 +497,14 @@ textarea.field-ctl { padding: 10px 14px; min-height: 92px; resize: vertical; lin
         <div class="bubble"><h2 id="helpTitle">使い方</h2><p>よく使う操作をご案内しますね。</p></div>
       </div>
       <dl class="tips">
-        <div><dt>曲を追加する</dt><dd>右下の「曲を追加」から登録します。必須なのは曲名だけ。アーティスト・タグ・リンク・メモはあとから足せます。</dd></div>
-        <div><dt>探す</dt><dd>検索欄は、曲名・アーティスト・タグ・メモをまとめて探します。上のタグをタップすると絞り込めます。</dd></div>
-        <div><dt>曲ファイル</dt><dd>追加画面の「曲ファイル」で音声ファイルを選ぶと、リストの再生ボタンで聴けます。ファイルはこのブラウザの中だけに保存されます。</dd></div>
+        <div><dt>3つの階層</dt><dd>「作曲者→アルバム→曲」の順に画面を掘り下げて見ていきます。名前をタップすると中へ、鉛筆マークをタップすると編集できます。</dd></div>
+        <div><dt>作曲者・アルバムを追加する</dt><dd>右下の「追加」から登録します。名前は必須ですが、説明文やジャケット画像はあとから足せます。</dd></div>
+        <div><dt>曲を追加する</dt><dd>アルバムを開いた状態で右下の「追加」から登録します。必須なのは曲名だけです。</dd></div>
+        <div><dt>探す</dt><dd>検索欄は、今開いている階層の中だけを探します。曲の画面ではタグで絞り込むこともできます。</dd></div>
+        <div><dt>曲ファイル・画像</dt><dd id="tipFile">曲の追加画面で音声ファイルを選ぶと、リストの再生ボタンで聴けます。ジャケットや歌詞カードの画像も、アルバムや曲ごとに登録できます。</dd></div>
         <div><dt>お気に入り</dt><dd>曲の右にある星をタップします。お気に入りの曲があると、タグの並びに「お気に入り」が出ます。</dd></div>
-        <div><dt>編集・削除</dt><dd>曲をタップすると編集できます。削除は「削除」を2回押すと確定します。</dd></div>
-        <div><dt>バックアップ</dt><dd>曲リストは、いま開いているブラウザの中に保存されます。左下の「バックアップ」でファイルに書き出しておくと安心です。別の端末には、書き出したファイルを読み込むと移せます。</dd></div>
+        <div><dt>削除</dt><dd>編集画面の「削除」を2回押すと確定します。作曲者やアルバムを削除すると、中に入っているアルバムや曲もまとめて削除されます。</dd></div>
+        <div><dt>バックアップ</dt><dd id="tipBackup">データは、いま開いているブラウザの中に保存されます。左下の「バックアップ」でファイルに書き出しておくと安心です。別の端末には、書き出したファイルを読み込むと移せます。</dd></div>
       </dl>
     </div>
     <div class="sheet-foot">
@@ -449,6 +515,7 @@ textarea.field-ctl { padding: 10px 14px; min-height: 92px; resize: vertical; lin
 
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script>
 (function () {
   'use strict';
@@ -456,13 +523,22 @@ textarea.field-ctl { padding: 10px 14px; min-height: 92px; resize: vertical; lin
   const $ = (sel) => document.querySelector(sel);
   const NS = 'http://www.w3.org/2000/svg';
   const coll = new Intl.Collator('ja');
-  const LOCAL_KEY = 'song-vault-v1';
+  const LOCAL_KEY = 'song-vault-v2';
   const SORT_KEY = 'song-vault-sort';
 
+  /* ---------- Supabase設定：ここに自分のプロジェクトの値を入れてください ---------- */
+  const SUPABASE_URL = 'https://wcflqcxskexarblsnyht.supabase.co';
+  const SUPABASE_ANON_KEY = 'sb_publishable_GSHJEtx8W4ZhTL_hDe2M2A_tkCsIeM9';
+  const FILE_BUCKET = 'song-files';
+
   const state = {
-    songs: [], loaded: false, backend: null, db: null,
+    composers: [], albums: [], songs: [],
+    loaded: false, backend: null, sb: null,
+    nav: { level: 'composers', composerId: null, albumId: null },
     q: '', sort: 'new', filter: { kind: 'all', tag: '' },
-    editingId: null, busy: new Set(), flash: null, flashScroll: false, fileMeta: new Map()
+    editing: { type: null, id: null },
+    busy: new Set(), flash: null, flashScroll: false,
+    fileMeta: new Map(), imgMeta: new Map()
   };
 
   /* ---------- DOM helpers (all text goes through textContent) ---------- */
@@ -489,17 +565,18 @@ textarea.field-ctl { padding: 10px 14px; min-height: 92px; resize: vertical; lin
     return el;
   }
 
-  /* ---------- generated jacket art ---------- */
+  /* ---------- generated jacket art (画像が未登録のときの仮ジャケット) ---------- */
   function hash(str) {
     let x = 2166136261 >>> 0;
     for (let i = 0; i < str.length; i++) { x ^= str.charCodeAt(i); x = Math.imul(x, 16777619) >>> 0; }
     return x >>> 0;
   }
-  function cover(song) {
-    const seed = hash((song.title || '') + '|' + (song.artist || ''));
-    const hue = seed % 360;
-    const hue2 = (hue + 35 + ((seed >>> 9) % 70)) % 360;
-    const kind = (seed >>> 17) % 5;
+  function coverArt(seed) {
+    seed = seed || '';
+    const s = hash(seed);
+    const hue = s % 360;
+    const hue2 = (hue + 35 + ((s >>> 9) % 70)) % 360;
+    const kind = (s >>> 17) % 5;
     const c1 = 'hsl(' + hue + ' 58% 38%)';
     const c2 = 'hsl(' + hue2 + ' 70% 68%)';
     const c3 = 'hsl(' + ((hue2 + 180) % 360) + ' 60% 88%)';
@@ -513,7 +590,7 @@ textarea.field-ctl { padding: 10px 14px; min-height: 92px; resize: vertical; lin
       svg.append(svgEl('circle', { cx: 44, cy: 20, r: 7, fill: c3 }));
     } else if (kind === 2) {
       for (let y = 0; y < 4; y++) for (let x = 0; x < 4; x++) {
-        svg.append(svgEl('circle', { cx: 8 + x * 16, cy: 8 + y * 16, r: 3 + ((seed >>> (x + y * 4)) & 3) * 1.6, fill: (x + y) % 2 ? c2 : c3 }));
+        svg.append(svgEl('circle', { cx: 8 + x * 16, cy: 8 + y * 16, r: 3 + ((s >>> (x + y * 4)) & 3) * 1.6, fill: (x + y) % 2 ? c2 : c3 }));
       }
     } else if (kind === 3) {
       svg.append(svgEl('circle', { cx: 0, cy: 64, r: 44, fill: c2 }));
@@ -543,7 +620,6 @@ textarea.field-ctl { padding: 10px 14px; min-height: 92px; resize: vertical; lin
       svgEl('path', { d: 'M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5' }));
     return s;
   }
-
   function iconPlay() {
     const s = svgEl('svg', { viewBox: '0 0 24 24', width: 24, height: 24, 'aria-hidden': 'true' });
     s.append(svgEl('path', { d: 'M8 5.5v13a1 1 0 0 0 1.5.86l10.4-6.5a1 1 0 0 0 0-1.72L9.5 4.64A1 1 0 0 0 8 5.5z', fill: 'currentColor' }));
@@ -555,9 +631,45 @@ textarea.field-ctl { padding: 10px 14px; min-height: 92px; resize: vertical; lin
       svgEl('rect', { x: 13.5, y: 5, width: 4, height: 14, rx: 1, fill: 'currentColor' }));
     return s;
   }
+  function iconEdit() {
+    const s = svgEl('svg', {
+      viewBox: '0 0 24 24', width: 22, height: 22, 'aria-hidden': 'true', fill: 'none',
+      stroke: 'currentColor', 'stroke-width': '1.8', 'stroke-linecap': 'round', 'stroke-linejoin': 'round'
+    });
+    s.append(svgEl('path', { d: 'M12 20h9' }),
+      svgEl('path', { d: 'M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z' }));
+    return s;
+  }
+  function iconChevron() {
+    const s = svgEl('svg', {
+      viewBox: '0 0 24 24', width: 22, height: 22, 'aria-hidden': 'true', fill: 'none',
+      stroke: 'currentColor', 'stroke-width': '2', 'stroke-linecap': 'round', 'stroke-linejoin': 'round'
+    });
+    s.append(svgEl('path', { d: 'M9 6l6 6-6 6' }));
+    return s;
+  }
+  function iconImage() {
+    const s = svgEl('svg', {
+      viewBox: '0 0 24 24', width: 22, height: 22, 'aria-hidden': 'true', fill: 'none',
+      stroke: 'currentColor', 'stroke-width': '1.8', 'stroke-linecap': 'round', 'stroke-linejoin': 'round'
+    });
+    s.append(svgEl('rect', { x: 3, y: 4, width: 18, height: 16, rx: 2 }),
+      svgEl('circle', { cx: 8.5, cy: 9.5, r: 1.6, fill: 'currentColor', stroke: 'none' }),
+      svgEl('path', { d: 'M21 16l-5.5-5.5L3 20' }));
+    return s;
+  }
+  function iconBack() {
+    const s = svgEl('svg', {
+      viewBox: '0 0 24 24', width: 20, height: 20, 'aria-hidden': 'true', fill: 'none',
+      stroke: 'currentColor', 'stroke-width': '2', 'stroke-linecap': 'round', 'stroke-linejoin': 'round'
+    });
+    s.append(svgEl('path', { d: 'M15 6l-6 6 6 6' }));
+    return s;
+  }
 
-  /* ---------- data ---------- */
+  /* ---------- data: 共通ヘルパー ---------- */
   function str(v, max) { return typeof v === 'string' ? v.slice(0, max) : ''; }
+  function num(v) { return Number.isFinite(v) ? v : (Number.isFinite(Number(v)) ? Number(v) : 0); }
   function safeUrl(u) {
     if (!u) return '';
     try {
@@ -565,19 +677,8 @@ textarea.field-ctl { padding: 10px 14px; min-height: 92px; resize: vertical; lin
       return (x.protocol === 'http:' || x.protocol === 'https:') ? x.href : '';
     } catch (e) { return ''; }
   }
-  function clean(id, d) {
-    d = d || {};
-    return {
-      id: id,
-      title: str(d.title, 120),
-      artist: str(d.artist, 120),
-      tags: Array.isArray(d.tags) ? d.tags.filter((t) => typeof t === 'string' && t).slice(0, 12).map((t) => t.slice(0, 24)) : [],
-      note: str(d.note, 1000),
-      url: safeUrl(str(d.url, 500)),
-      fav: d.fav === true,
-      createdAt: Number.isFinite(d.createdAt) ? d.createdAt : 0
-    };
-  }
+  function newId() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 8); }
+  function norm(t) { return (t || '').normalize('NFKC').toLowerCase(); }
   function parseTags(text) {
     const seen = new Set();
     return text.split(/[,、，\s]+/).map((t) => t.trim().replace(/^#/, '').slice(0, 24)).filter((t) => {
@@ -585,111 +686,415 @@ textarea.field-ctl { padding: 10px 14px; min-height: 92px; resize: vertical; lin
       seen.add(t); return true;
     }).slice(0, 12);
   }
-  function newId() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 8); }
 
-  function readLocal() {
+  /* ---------- data: 作曲者 / アルバム / 曲 ---------- */
+  function cleanComposer(id, d) {
+    d = d || {};
+    return { id: id, name: str(d.name, 120), note: str(d.note, 2000), createdAt: num(d.createdAt) };
+  }
+  function cleanAlbum(id, d) {
+    d = d || {};
+    return {
+      id: id, composerId: str(d.composerId, 60), name: str(d.name, 120), note: str(d.note, 2000), createdAt: num(d.createdAt),
+      coverName: d.coverName || null, coverType: d.coverType || null, coverSize: Number.isFinite(d.coverSize) ? d.coverSize : null,
+      lyricName: d.lyricName || null, lyricType: d.lyricType || null, lyricSize: Number.isFinite(d.lyricSize) ? d.lyricSize : null
+    };
+  }
+  function cleanSong(id, d) {
+    d = d || {};
+    return {
+      id: id, albumId: str(d.albumId, 60), title: str(d.title, 120),
+      tags: Array.isArray(d.tags) ? d.tags.filter((t) => typeof t === 'string' && t).slice(0, 12).map((t) => t.slice(0, 24)) : [],
+      note: str(d.note, 1000), url: safeUrl(str(d.url, 500)), fav: d.fav === true, createdAt: num(d.createdAt),
+      fileName: d.fileName || null, fileType: d.fileType || null, fileSize: Number.isFinite(d.fileSize) ? d.fileSize : null,
+      coverName: d.coverName || null, coverType: d.coverType || null, coverSize: Number.isFinite(d.coverSize) ? d.coverSize : null,
+      lyricName: d.lyricName || null, lyricType: d.lyricType || null, lyricSize: Number.isFinite(d.lyricSize) ? d.lyricSize : null
+    };
+  }
+  function rowToComposer(row) { return cleanComposer(row.id, { name: row.name, note: row.note, createdAt: row.created_at }); }
+  function composerToRow(c) { return { id: c.id, name: c.name, note: c.note, created_at: c.createdAt }; }
+  function rowToAlbum(row) {
+    return cleanAlbum(row.id, {
+      composerId: row.composer_id, name: row.name, note: row.note, createdAt: row.created_at,
+      coverName: row.cover_name, coverType: row.cover_type, coverSize: row.cover_size,
+      lyricName: row.lyric_name, lyricType: row.lyric_type, lyricSize: row.lyric_size
+    });
+  }
+  function albumToRow(a) {
+    return {
+      id: a.id, composer_id: a.composerId, name: a.name, note: a.note, created_at: a.createdAt,
+      cover_name: a.coverName, cover_type: a.coverType, cover_size: a.coverSize,
+      lyric_name: a.lyricName, lyric_type: a.lyricType, lyric_size: a.lyricSize
+    };
+  }
+  function rowToSong(row) {
+    return cleanSong(row.id, {
+      albumId: row.album_id, title: row.title, tags: row.tags, note: row.note, url: row.url, fav: row.fav, createdAt: row.created_at,
+      fileName: row.file_name, fileType: row.file_type, fileSize: row.file_size,
+      coverName: row.cover_name, coverType: row.cover_type, coverSize: row.cover_size,
+      lyricName: row.lyric_name, lyricType: row.lyric_type, lyricSize: row.lyric_size
+    });
+  }
+  function songToRow(s) {
+    return {
+      id: s.id, album_id: s.albumId, title: s.title, tags: s.tags, note: s.note, url: s.url, fav: s.fav, created_at: s.createdAt,
+      file_name: s.fileName, file_type: s.fileType, file_size: s.fileSize,
+      cover_name: s.coverName, cover_type: s.coverType, cover_size: s.coverSize,
+      lyric_name: s.lyricName, lyric_type: s.lyricType, lyric_size: s.lyricSize
+    };
+  }
+  function sbErr(error) {
+    const msg = (error && error.message) || '';
+    if (/permission|policy|row-level security/i.test(msg)) return { code: 'invalid_argument', message: msg };
+    if (/rate|too many/i.test(msg)) return { code: 'resource_exhausted', message: msg };
+    return { code: 'db_failed', message: msg };
+  }
+  function errMsg(e) {
+    switch (e && e.code) {
+      case 'quota_exceeded': return '保存できる件数の上限に達しています。不要なものを削除してください。';
+      case 'resource_exhausted': return '操作が多すぎます。少し待ってからもう一度お試しください。';
+      case 'revoked': return 'アクセス権が変わったため保存できません。ページを開き直してください。';
+      case 'invalid_argument': return '保存できませんでした。編集する権限がない可能性があります。';
+      case 'local_failed': return 'ブラウザに保存できませんでした。空き容量や設定を確認してください。';
+      case 'db_failed': return '保存に失敗しました。' + (e.message ? '（' + e.message + '）' : 'もう一度お試しください。');
+      default: return '保存に失敗しました。もう一度お試しください。';
+    }
+  }
+
+  /* ---------- ローカル保存（Supabase未設定のとき） ---------- */
+  function readLocalAll() {
     try {
       const raw = localStorage.getItem(LOCAL_KEY);
-      const arr = raw ? JSON.parse(raw) : [];
-      return Array.isArray(arr) ? arr.filter((x) => x && typeof x.id === 'string').map((x) => clean(x.id, x)) : [];
-    } catch (e) { return []; }
+      const d = raw ? JSON.parse(raw) : null;
+      return {
+        composers: Array.isArray(d && d.composers) ? d.composers.filter((x) => x && typeof x.id === 'string').map((x) => cleanComposer(x.id, x)) : [],
+        albums: Array.isArray(d && d.albums) ? d.albums.filter((x) => x && typeof x.id === 'string').map((x) => cleanAlbum(x.id, x)) : [],
+        songs: Array.isArray(d && d.songs) ? d.songs.filter((x) => x && typeof x.id === 'string').map((x) => cleanSong(x.id, x)) : []
+      };
+    } catch (e) { return { composers: [], albums: [], songs: [] }; }
   }
-  function writeLocal(list) {
-    try { localStorage.setItem(LOCAL_KEY, JSON.stringify(list)); }
-    catch (e) { throw { code: 'local_failed' }; }
+  function writeLocalAll() {
+    try {
+      localStorage.setItem(LOCAL_KEY, JSON.stringify({ composers: state.composers, albums: state.albums, songs: state.songs }));
+    } catch (e) { throw { code: 'local_failed' }; }
   }
 
-  async function persist(song) {
+  /* ---------- CRUD: 作曲者・アルバム・曲 ---------- */
+  async function refreshAll() {
+    const [cs, as, ss] = await Promise.all([
+      state.sb.from('composers').select('*'),
+      state.sb.from('albums').select('*'),
+      state.sb.from('songs').select('*')
+    ]);
+    if (cs.error || as.error || ss.error) {
+      toast('データを読み込めませんでした。' + errMsg(sbErr(cs.error || as.error || ss.error)));
+      return;
+    }
+    state.composers = (cs.data || []).map(rowToComposer);
+    state.albums = (as.data || []).map(rowToAlbum);
+    state.songs = (ss.data || []).map(rowToSong);
+    state.loaded = true;
+    rebuildFileMeta();
+    reconcileNav();
+    render();
+  }
+  function reconcileNav() {
+    if (state.nav.composerId && !state.composers.some((c) => c.id === state.nav.composerId)) { state.nav = { level: 'composers', composerId: null, albumId: null }; return; }
+    if (state.nav.albumId && !state.albums.some((a) => a.id === state.nav.albumId)) { state.nav = { level: 'albums', composerId: state.nav.composerId, albumId: null }; }
+  }
+  function rebuildFileMeta() {
+    const m = new Map();
+    state.songs.forEach((s) => { if (s.fileName) m.set(s.id, { name: s.fileName, type: s.fileType, size: s.fileSize }); });
+    state.fileMeta = m;
+  }
+  function subscribeRealtime() {
+    state.sb.channel('vault-sync')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'composers' }, () => { refreshAll(); })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'albums' }, () => { refreshAll(); })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'songs' }, () => { refreshAll(); })
+      .subscribe();
+  }
+  function createSupabaseClient() {
+    if (!window.supabase || typeof window.supabase.createClient !== 'function') return null;
+    if (!SUPABASE_URL || !SUPABASE_ANON_KEY || SUPABASE_URL.indexOf('YOUR_') === 0 || SUPABASE_ANON_KEY.indexOf('YOUR_') === 0) return null;
+    try { return window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY); }
+    catch (e) { return null; }
+  }
+
+  async function persistComposer(c) {
     if (state.backend === 'db') {
-      const body = Object.assign({}, song); delete body.id;
-      await state.db.collection('songs').doc(song.id).set(body);
+      const { error } = await state.sb.from('composers').upsert(composerToRow(c));
+      if (error) throw sbErr(error);
+      await refreshAll();
+      return;
+    }
+    const next = state.composers.slice();
+    const i = next.findIndex((x) => x.id === c.id);
+    if (i >= 0) next[i] = c; else next.push(c);
+    writeLocalAll2(next, state.albums, state.songs);
+  }
+  async function persistAlbum(a) {
+    if (state.backend === 'db') {
+      const { error } = await state.sb.from('albums').upsert(albumToRow(a));
+      if (error) throw sbErr(error);
+      await refreshAll();
+      return;
+    }
+    const next = state.albums.slice();
+    const i = next.findIndex((x) => x.id === a.id);
+    if (i >= 0) next[i] = a; else next.push(a);
+    writeLocalAll2(state.composers, next, state.songs);
+  }
+  async function persistSong(s) {
+    if (state.backend === 'db') {
+      const { error } = await state.sb.from('songs').upsert(songToRow(s));
+      if (error) throw sbErr(error);
+      await refreshAll();
       return;
     }
     const next = state.songs.slice();
-    const i = next.findIndex((x) => x.id === song.id);
-    if (i >= 0) next[i] = song; else next.push(song);
-    writeLocal(next); state.songs = next; render();
+    const i = next.findIndex((x) => x.id === s.id);
+    if (i >= 0) next[i] = s; else next.push(s);
+    writeLocalAll2(state.composers, state.albums, next);
   }
+  function writeLocalAll2(composers, albums, songs) {
+    state.composers = composers; state.albums = albums; state.songs = songs;
+    writeLocalAll();
+    rebuildFileMeta();
+    render();
+  }
+
   async function removeSong(id) {
-    if (state.backend === 'db') { await state.db.collection('songs').doc(id).delete(); return; }
-    const next = state.songs.filter((x) => x.id !== id);
-    writeLocal(next); state.songs = next; render();
+    if (state.backend === 'db') {
+      const { error } = await state.sb.from('songs').delete().eq('id', id);
+      if (error) throw sbErr(error);
+      await refreshAll();
+      return;
+    }
+    writeLocalAll2(state.composers, state.albums, state.songs.filter((x) => x.id !== id));
+  }
+  async function removeAlbum(id) {
+    const kids = state.songs.filter((s) => s.albumId === id);
+    for (const s of kids) { await dropFile(s.id); await imgDrop('scover', s.id); await imgDrop('slyric', s.id); }
+    await imgDrop('acover', id); await imgDrop('alyric', id);
+    if (state.backend === 'db') {
+      const { error } = await state.sb.from('albums').delete().eq('id', id);
+      if (error) throw sbErr(error);
+      await refreshAll();
+      return;
+    }
+    writeLocalAll2(state.composers, state.albums.filter((x) => x.id !== id), state.songs.filter((s) => s.albumId !== id));
+  }
+  async function removeComposer(id) {
+    const albums = state.albums.filter((a) => a.composerId === id);
+    for (const a of albums) await removeAlbum(a.id);
+    if (state.backend === 'db') {
+      const { error } = await state.sb.from('composers').delete().eq('id', id);
+      if (error) throw sbErr(error);
+      await refreshAll();
+      return;
+    }
+    writeLocalAll2(state.composers.filter((x) => x.id !== id), state.albums.filter((a) => a.composerId !== id), state.songs);
   }
   async function toggleFav(id) {
     if (state.busy.has(id)) return;
     const sg = state.songs.find((x) => x.id === id);
     if (!sg) return;
     state.busy.add(id);
-    try {
-      if (state.backend === 'db') await state.db.collection('songs').doc(id).update({ fav: !sg.fav });
-      else await persist(Object.assign({}, sg, { fav: !sg.fav }));
-    } catch (e) { toast(errMsg(e)); }
+    try { await persistSong(Object.assign({}, sg, { fav: !sg.fav })); }
+    catch (e) { toast(errMsg(e)); }
     finally { state.busy.delete(id); }
   }
-  function errMsg(e) {
-    switch (e && e.code) {
-      case 'quota_exceeded': return '保存できる曲数の上限に達しています。不要な曲を削除してください。';
-      case 'resource_exhausted': return '操作が多すぎます。少し待ってからもう一度お試しください。';
-      case 'revoked': return 'アクセス権が変わったため保存できません。ページを開き直してください。';
-      case 'invalid_argument': return '保存できませんでした。この曲を編集する権限がない可能性があります。';
-      case 'local_failed': return 'ブラウザに保存できませんでした。空き容量や設定を確認してください。';
-      default: return '保存に失敗しました。もう一度お試しください。';
-    }
+
+  /* ---------- ナビゲーション ---------- */
+  function currentComposer() { return state.composers.find((c) => c.id === state.nav.composerId) || null; }
+  function currentAlbum() { return state.albums.find((a) => a.id === state.nav.albumId) || null; }
+  function resetListUi() {
+    state.q = ''; $('#q').value = ''; $('#qClear').hidden = true;
+    state.filter = { kind: 'all', tag: '' };
+  }
+  function goComposers() { state.nav = { level: 'composers', composerId: null, albumId: null }; resetListUi(); render(); }
+  function goAlbums(composerId) { state.nav = { level: 'albums', composerId: composerId, albumId: null }; resetListUi(); render(); }
+  function goSongs(albumId) {
+    const al = state.albums.find((a) => a.id === albumId);
+    if (!al) return;
+    state.nav = { level: 'songs', composerId: al.composerId, albumId: albumId };
+    resetListUi(); render();
   }
 
-  /* ---------- view ---------- */
-  function norm(t) { return (t || '').normalize('NFKC').toLowerCase(); }
+  /* ---------- 画像（Supabase Storage / IndexedDB） ---------- */
+  function imgPath(kind, id) { return 'img/' + kind + '/' + id; }
+  function guessImgType(f) { return (f.type && f.type.indexOf('image/') === 0) ? f.type : 'image/jpeg'; }
+  function imgUrl(kind, id) {
+    if (state.backend !== 'db') return null;
+    const { data } = state.sb.storage.from(FILE_BUCKET).getPublicUrl(imgPath(kind, id));
+    return data && data.publicUrl;
+  }
+  function imgPutRec(kind, id, f) {
+    const type = guessImgType(f);
+    if (state.backend === 'db') {
+      return state.sb.storage.from(FILE_BUCKET).upload(imgPath(kind, id), f, { upsert: true, contentType: type })
+        .then((res) => { if (res.error) throw sbErr(res.error); return { name: f.name.slice(0, 200), type: type, size: f.size }; });
+    }
+    const meta = { name: f.name.slice(0, 200), type: type, size: f.size };
+    const key = kind + ':' + id;
+    return tx(['imgblobs', 'imgmeta'], 'readwrite', (t) => {
+      t.objectStore('imgblobs').put(f.slice(0, f.size, type), key);
+      t.objectStore('imgmeta').put(meta, key);
+    }).then(() => { state.imgMeta.set(key, meta); });
+  }
+  async function imgDrop(kind, id) {
+    if (state.backend === 'db') {
+      try { await state.sb.storage.from(FILE_BUCKET).remove([imgPath(kind, id)]); } catch (e) { /* 無視 */ }
+      return;
+    }
+    const key = kind + ':' + id;
+    if (state.imgMeta.has(key)) {
+      try { await tx(['imgblobs', 'imgmeta'], 'readwrite', (t) => { t.objectStore('imgblobs').delete(key); t.objectStore('imgmeta').delete(key); }); } catch (e) { /* 無視 */ }
+      state.imgMeta.delete(key);
+    }
+  }
+  function imgGet(kind, id) {
+    const key = kind + ':' + id;
+    return tx(['imgblobs', 'imgmeta'], 'readonly', (t) => {
+      const o = {};
+      t.objectStore('imgblobs').get(key).onsuccess = (e) => { o.blob = e.target.result; };
+      t.objectStore('imgmeta').get(key).onsuccess = (e) => { o.meta = e.target.result; };
+      return o;
+    });
+  }
+  async function openImage(kind, id, has) {
+    if (!has) return;
+    if (state.backend === 'db') {
+      const url = imgUrl(kind, id);
+      if (url) window.open(url, '_blank', 'noopener');
+      return;
+    }
+    try {
+      const rec = await imgGet(kind, id);
+      if (rec && rec.blob) {
+        const u = URL.createObjectURL(rec.blob);
+        window.open(u, '_blank', 'noopener');
+        setTimeout(() => URL.revokeObjectURL(u), 60000);
+      } else { toast('画像を読み込めませんでした。'); }
+    } catch (e) { toast('画像を読み込めませんでした。'); }
+  }
+  function coverThumb(kind, id, present, seed) {
+    const url = present ? imgUrl(kind, id) : null;
+    if (url) return h('img', { class: 'cover img', src: url, alt: '', loading: 'lazy' });
+    return coverArt(seed);
+  }
+
+  /* ---------- view: 一覧の絞り込み・並べ替え ---------- */
   function view() {
     const words = norm(state.q).trim().split(/\s+/).filter(Boolean);
-    const list = state.songs.filter((sg) => {
+    if (state.nav.level === 'composers') {
+      let list = state.composers.filter((c) => !words.length || words.every((w) => norm(c.name + ' ' + c.note).indexOf(w) >= 0));
+      list.sort((a, b) => coll.compare(a.name, b.name));
+      return list;
+    }
+    if (state.nav.level === 'albums') {
+      let list = state.albums.filter((a) => a.composerId === state.nav.composerId);
+      list = list.filter((a) => !words.length || words.every((w) => norm(a.name + ' ' + a.note).indexOf(w) >= 0));
+      list.sort((a, b) => (state.sort === 'title') ? coll.compare(a.name, b.name) : ((b.createdAt - a.createdAt) || coll.compare(a.name, b.name)));
+      return list;
+    }
+    let list = state.songs.filter((s) => s.albumId === state.nav.albumId);
+    list = list.filter((sg) => {
       if (state.filter.kind === 'fav' && !sg.fav) return false;
       if (state.filter.kind === 'tag' && sg.tags.indexOf(state.filter.tag) < 0) return false;
       if (!words.length) return true;
-      const hay = norm([sg.title, sg.artist, sg.note, sg.tags.join(' ')].join(' '));
+      const hay = norm([sg.title, sg.note, sg.tags.join(' ')].join(' '));
       return words.every((w) => hay.indexOf(w) >= 0);
     });
-    list.sort((a, b) => {
-      if (state.sort === 'title') return coll.compare(a.title, b.title);
-      if (state.sort === 'artist') {
-        return ((a.artist ? 0 : 1) - (b.artist ? 0 : 1)) || coll.compare(a.artist, b.artist) || coll.compare(a.title, b.title);
-      }
-      return (b.createdAt - a.createdAt) || coll.compare(a.title, b.title);
-    });
+    list.sort((a, b) => (state.sort === 'title') ? coll.compare(a.title, b.title) : ((b.createdAt - a.createdAt) || coll.compare(a.title, b.title)));
     return list;
   }
 
-  function renderItem(sg) {
+  /* ---------- 行の描画 ---------- */
+  function renderComposerRow(c) {
+    const main = h('button', { class: 'row-main', type: 'button', onclick: () => goAlbums(c.id) },
+      coverArt(c.name),
+      h('span', { class: 'meta' },
+        h('span', { class: 'name' }, c.name || '（無題の作曲者）'),
+        c.note ? h('span', { class: 'artist' }, c.note) : null));
+    const edit = h('button', { class: 'icon-btn', type: 'button', 'aria-label': '編集', onclick: (e) => { e.stopPropagation(); openComposerSheet(c.id); } }, iconEdit());
+    const arrow = h('span', { class: 'icon-btn', 'aria-hidden': 'true' }, iconChevron());
+    return h('li', { class: 'row', 'data-id': c.id }, main, h('span', { class: 'actions' }, edit, arrow));
+  }
+  function renderAlbumRow(a) {
+    const hasCover = hasImage('acover', a.id, a.coverName), hasLyric = hasImage('alyric', a.id, a.lyricName);
+    const main = h('button', { class: 'row-main', type: 'button', onclick: () => goSongs(a.id) },
+      coverThumb('acover', a.id, hasCover, a.name),
+      h('span', { class: 'meta' },
+        h('span', { class: 'name' }, a.name || '（無題のアルバム）'),
+        a.note ? h('span', { class: 'artist' }, a.note) : null));
+    const lyric = hasLyric ? h('button', { class: 'icon-btn', type: 'button', 'aria-label': '歌詞カードを見る', onclick: (e) => { e.stopPropagation(); openImage('alyric', a.id, true); } }, iconImage()) : null;
+    const edit = h('button', { class: 'icon-btn', type: 'button', 'aria-label': '編集', onclick: (e) => { e.stopPropagation(); openAlbumSheet(a.id); } }, iconEdit());
+    const arrow = h('span', { class: 'icon-btn', 'aria-hidden': 'true' }, iconChevron());
+    return h('li', { class: 'row', 'data-id': a.id }, main, h('span', { class: 'actions' }, lyric, edit, arrow));
+  }
+  function renderSongRow(sg) {
     const star = h('button', {
       class: 'icon-btn' + (sg.fav ? ' on' : ''), type: 'button',
       'aria-pressed': String(sg.fav), 'aria-label': sg.fav ? 'お気に入りを外す' : 'お気に入りに追加',
       onclick: (e) => { e.stopPropagation(); toggleFav(sg.id); }
     }, iconStar(sg.fav));
+    const hasLyric = hasImage('slyric', sg.id, sg.lyricName), hasCover = hasImage('scover', sg.id, sg.coverName);
+    const lyric = hasLyric ? h('button', { class: 'icon-btn', type: 'button', 'aria-label': '歌詞カードを見る', onclick: (e) => { e.stopPropagation(); openImage('slyric', sg.id, true); } }, iconImage()) : null;
     const open = sg.url ? h('a', {
       class: 'icon-btn', href: sg.url, target: '_blank', rel: 'noopener noreferrer',
       'aria-label': 'リンクを開く', onclick: (e) => e.stopPropagation()
     }, iconLink()) : null;
-    const main = h('button', { class: 'row-main', type: 'button', onclick: () => openSheet(sg.id) },
-      cover(sg),
+    const main = h('button', { class: 'row-main', type: 'button', onclick: () => openSongSheet(sg.id) },
+      coverThumb('scover', sg.id, hasCover, sg.title),
       h('span', { class: 'meta' },
         h('span', { class: 'name' }, sg.title || '（無題）'),
-        sg.artist ? h('span', { class: 'artist' }, sg.artist) : null,
         sg.tags.length ? h('span', { class: 'tags' }, sg.tags.map((t) => h('span', { class: 'tag' }, t))) : null));
     const play = state.fileMeta.has(sg.id) ? h('button', {
       class: 'icon-btn play', type: 'button', 'data-id': sg.id, 'aria-label': '再生',
       onclick: (e) => { e.stopPropagation(); playSong(sg.id); }
     }, iconPlay()) : null;
-    return h('li', { class: 'row', 'data-id': sg.id }, main, h('span', { class: 'actions' }, play, open, star));
+    return h('li', { class: 'row', 'data-id': sg.id }, main, h('span', { class: 'actions' }, play, lyric, open, star));
+  }
+  function renderRow(item) {
+    if (state.nav.level === 'composers') return renderComposerRow(item);
+    if (state.nav.level === 'albums') return renderAlbumRow(item);
+    return renderSongRow(item);
+  }
+
+  function renderHeader() {
+    const back = $('#back'), h1 = $('#h1'), noteBox = $('#noteBox');
+    if (state.nav.level === 'composers') {
+      back.hidden = true; h1.textContent = '楽曲保管庫';
+      noteBox.hidden = true;
+    } else if (state.nav.level === 'albums') {
+      back.hidden = false; back.onclick = goComposers;
+      const c = currentComposer();
+      h1.textContent = c ? (c.name || '（無題の作曲者）') : '';
+      if (c && c.note) { noteBox.hidden = false; noteBox.textContent = c.note; } else { noteBox.hidden = true; }
+    } else {
+      back.hidden = false; back.onclick = () => goAlbums(state.nav.composerId);
+      const a = currentAlbum();
+      h1.textContent = a ? (a.name || '（無題のアルバム）') : '';
+      if (a && a.note) { noteBox.hidden = false; noteBox.textContent = a.note; } else { noteBox.hidden = true; }
+    }
+    $('#q').placeholder = state.nav.level === 'composers' ? '作曲者を検索' : (state.nav.level === 'albums' ? 'アルバムを検索' : '曲を検索');
+    $('#sortWrap').hidden = state.nav.level === 'composers';
+    $('#add').textContent = state.nav.level === 'composers' ? '作曲者を追加' : (state.nav.level === 'albums' ? 'アルバムを追加' : '曲を追加');
   }
 
   function renderChips() {
     const box = $('#chips');
     box.replaceChildren();
+    if (state.nav.level !== 'songs') { box.hidden = true; return; }
+    const songs = state.songs.filter((s) => s.albumId === state.nav.albumId);
     const counts = new Map();
-    state.songs.forEach((s) => s.tags.forEach((t) => counts.set(t, (counts.get(t) || 0) + 1)));
-    const anyFav = state.songs.some((s) => s.fav);
+    songs.forEach((s) => s.tags.forEach((t) => counts.set(t, (counts.get(t) || 0) + 1)));
+    const anyFav = songs.some((s) => s.fav);
     if (state.filter.kind === 'tag' && !counts.has(state.filter.tag)) state.filter = { kind: 'all', tag: '' };
     if (state.filter.kind === 'fav' && !anyFav) state.filter = { kind: 'all', tag: '' };
-    box.hidden = state.songs.length === 0;
+    box.hidden = songs.length === 0;
     const mk = (label, active, fn) => h('button', { class: 'chip', type: 'button', 'aria-pressed': String(active), onclick: fn }, label);
     box.append(mk('すべて', state.filter.kind === 'all', () => setFilter({ kind: 'all', tag: '' })));
     if (anyFav) box.append(mk('お気に入り', state.filter.kind === 'fav', () => setFilter({ kind: 'fav', tag: '' })));
@@ -703,39 +1108,51 @@ textarea.field-ctl { padding: 10px 14px; min-height: 92px; resize: vertical; lin
     list.replaceChildren(); st.replaceChildren();
     if (!state.loaded) { list.hidden = true; st.append(h('p', { class: 'msg' }, '読み込み中…')); return; }
     const items = view();
-    items.forEach((sg) => list.append(renderItem(sg)));
+    items.forEach((item) => list.append(renderRow(item)));
     list.hidden = items.length === 0;
     applyFlash(list);
-    if (state.songs.length === 0) {
+    const total = state.nav.level === 'composers' ? state.composers.length
+      : state.nav.level === 'albums' ? state.albums.filter((a) => a.composerId === state.nav.composerId).length
+      : state.songs.filter((s) => s.albumId === state.nav.albumId).length;
+    if (total === 0) {
       st.append(emptyState());
     } else if (items.length === 0) {
-      st.append(h('p', { class: 'msg' }, '条件に合う曲がありません。検索語かタグを変えてください。'),
+      st.append(h('p', { class: 'msg' }, '条件に合うものがありません。検索語かタグを変えてください。'),
         h('div', { style: 'text-align:center' }, h('button', { class: 'btn', type: 'button', onclick: clearFilters }, '条件をクリア')));
     }
-    $('#foot').hidden = state.backend !== 'local' || state.songs.length === 0;
+    $('#foot').hidden = state.backend !== 'local' || total === 0;
     syncPlay();
   }
   function renderCount() {
     const el = $('#count');
     if (!state.loaded) { el.textContent = ''; return; }
-    const n = state.songs.length, m = view().length;
-    el.textContent = m === n ? '全' + n + '曲' : m + '曲 / 全' + n + '曲';
+    const items = view();
+    const n = state.nav.level === 'composers' ? state.composers.length
+      : state.nav.level === 'albums' ? state.albums.filter((a) => a.composerId === state.nav.composerId).length
+      : state.songs.filter((s) => s.albumId === state.nav.albumId).length;
+    const unit = state.nav.level === 'composers' ? '人' : (state.nav.level === 'albums' ? '枚' : '曲');
+    const m = items.length;
+    el.textContent = m === n ? '全' + n + unit : m + unit + ' / 全' + n + unit;
   }
-  function render() { renderChips(); renderList(); renderCount(); }
+  function render() { renderHeader(); renderChips(); renderList(); renderCount(); }
   function setFilter(f) { state.filter = f; render(); }
   function clearFilters() { state.q = ''; $('#q').value = ''; $('#qClear').hidden = true; state.filter = { kind: 'all', tag: '' }; render(); }
 
   function emptyState() {
+    const label = state.nav.level === 'composers' ? '作曲者を追加' : (state.nav.level === 'albums' ? 'アルバムを追加' : '曲を追加');
+    const msg = state.nav.level === 'composers' ? 'はじめまして。まずは作曲者を1人、登録してみましょう。'
+      : state.nav.level === 'albums' ? 'このアルバムはまだ空です。アルバムを追加してみましょう。'
+      : 'この曲はまだ登録されていません。曲を追加してみましょう。';
     return h('div', { class: 'empty' },
       h('div', { class: 'guide' },
         h('div', { class: 'guide-pic', role: 'img', 'aria-label': '案内役のキャラクター' }),
-        h('div', { class: 'bubble' }, h('p', null, 'はじめまして。まずは好きな曲を1曲、登録してみましょう。曲名だけでも大丈夫です。'))),
+        h('div', { class: 'bubble' }, h('p', null, msg))),
       h('div', { class: 'btns' },
-        h('button', { class: 'btn primary', type: 'button', onclick: () => openSheet() }, '曲を追加'),
+        h('button', { class: 'btn primary', type: 'button', onclick: () => openAddSheet() }, label),
         h('button', { class: 'btn', type: 'button', onclick: openHelp }, '使い方を見る')));
   }
 
-  /* 追加・保存した曲を一瞬ハイライトして、見える位置までスクロールする */
+  /* 追加・保存した行を一瞬ハイライトして、見える位置までスクロールする */
   let flashTimer = null;
   function applyFlash(list) {
     if (!state.flash) return;
@@ -766,35 +1183,30 @@ textarea.field-ctl { padding: 10px 14px; min-height: 92px; resize: vertical; lin
     toastTimer = setTimeout(() => el.classList.remove('show'), 2600);
   }
 
-  /* ---------- sheet ---------- */
+  /* ---------- 追加画面をレベルに応じて開く ---------- */
+  function openAddSheet() {
+    if (state.nav.level === 'composers') openComposerSheet();
+    else if (state.nav.level === 'albums') openAlbumSheet();
+    else openSongSheet();
+  }
+
+  /* ---------- sheet: 共通 ---------- */
   const overlay = $('#overlay'), sheet = $('#sheet');
+  const fldsComposer = $('#fldsComposer'), fldsAlbum = $('#fldsAlbum'), fldsSong = $('#fldsSong');
   let lastFocus = null, delArmed = false, delTimer = null;
+  let sheetFile = { pending: null, remove: false };
+  let sheetImg = {
+    alCover: { pending: null, remove: false }, alLyric: { pending: null, remove: false },
+    sgCover: { pending: null, remove: false }, sgLyric: { pending: null, remove: false }
+  };
 
   function setErr(msg) { $('#fErr').textContent = msg || ''; }
   function resetDel() { clearTimeout(delTimer); delArmed = false; $('#del').textContent = '削除'; }
   function setSaving(on) { $('#save').disabled = on; $('#del').disabled = on; $('#cancel').disabled = on; }
-
-  function openSheet(id) {
-    const sg = id ? state.songs.find((x) => x.id === id) : null;
-    if (id && !sg) return;
-    state.editingId = sg ? sg.id : null;
-    $('#sheetTitle').textContent = sg ? '曲を編集' : '曲を追加';
-    $('#save').textContent = sg ? '保存' : '追加';
-    $('#fTitle').value = sg ? sg.title : '';
-    $('#fArtist').value = sg ? sg.artist : '';
-    $('#fTags').value = sg ? sg.tags.join(', ') : '';
-    $('#fUrl').value = sg ? sg.url : '';
-    $('#fNote').value = sg ? sg.note : '';
-    $('#fFav').checked = sg ? sg.fav : false;
-    fillArtists(); renderTagSug();
-    sheetFile = { pending: null, remove: false }; renderFileField();
-    setErr(''); setSaving(false); resetDel();
-    $('#del').hidden = !sg;
-    lastFocus = document.activeElement;
-    overlay.hidden = false;
-    document.body.classList.add('locked');
-    $('.sheet-body').scrollTop = 0;
-    $('#fTitle').focus();
+  function showFlds(type) {
+    fldsComposer.hidden = type !== 'composer';
+    fldsAlbum.hidden = type !== 'album';
+    fldsSong.hidden = type !== 'song';
   }
   function closeSheet() {
     overlay.hidden = true;
@@ -803,45 +1215,179 @@ textarea.field-ctl { padding: 10px 14px; min-height: 92px; resize: vertical; lin
     if (lastFocus && lastFocus.focus && document.contains(lastFocus)) lastFocus.focus();
   }
 
-  async function onSave() {
+  /* ---------- 作曲者シート ---------- */
+  function openComposerSheet(id) {
+    const c = id ? state.composers.find((x) => x.id === id) : null;
+    if (id && !c) return;
+    state.editing = { type: 'composer', id: c ? c.id : null };
+    showFlds('composer');
+    $('#sheetTitle').textContent = c ? '作曲者を編集' : '作曲者を追加';
+    $('#save').textContent = c ? '保存' : '追加';
+    $('#cName').value = c ? c.name : '';
+    $('#cNote').value = c ? c.note : '';
+    setErr(''); setSaving(false); resetDel();
+    $('#del').hidden = !c;
+    openOverlay('#cName');
+  }
+  function saveComposer() {
+    const name = $('#cName').value.trim();
+    if (!name) { setErr('作曲者名を入力してください。'); $('#cName').focus(); return null; }
+    const existing = state.editing.id ? state.composers.find((x) => x.id === state.editing.id) : null;
+    return {
+      id: existing ? existing.id : newId(),
+      name: name.slice(0, 120),
+      note: $('#cNote').value.trim().slice(0, 2000),
+      createdAt: existing ? existing.createdAt : Date.now()
+    };
+  }
+
+  /* ---------- アルバムシート ---------- */
+  function openAlbumSheet(id) {
+    const a = id ? state.albums.find((x) => x.id === id) : null;
+    if (id && !a) return;
+    state.editing = { type: 'album', id: a ? a.id : null };
+    showFlds('album');
+    $('#sheetTitle').textContent = a ? 'アルバムを編集' : 'アルバムを追加';
+    $('#save').textContent = a ? '保存' : '追加';
+    $('#alName').value = a ? a.name : '';
+    $('#alNote').value = a ? a.note : '';
+    sheetImg.alCover = { pending: null, remove: false };
+    sheetImg.alLyric = { pending: null, remove: false };
+    renderImgField('al', 'Cover', 'acover', a ? a.id : null, a ? a.coverName : null, a ? a.coverSize : null);
+    renderImgField('al', 'Lyric', 'alyric', a ? a.id : null, a ? a.lyricName : null, a ? a.lyricSize : null);
+    setErr(''); setSaving(false); resetDel();
+    $('#del').hidden = !a;
+    openOverlay('#alName');
+  }
+  function saveAlbumBase() {
+    const name = $('#alName').value.trim();
+    if (!name) { setErr('アルバム名を入力してください。'); $('#alName').focus(); return null; }
+    const existing = state.editing.id ? state.albums.find((x) => x.id === state.editing.id) : null;
+    const base = existing ? Object.assign({}, existing) : cleanAlbum(newId(), { composerId: state.nav.composerId, createdAt: Date.now() });
+    base.name = name.slice(0, 120);
+    base.note = $('#alNote').value.trim().slice(0, 2000);
+    return base;
+  }
+
+  /* ---------- 曲シート ---------- */
+  function openSongSheet(id) {
+    const sg = id ? state.songs.find((x) => x.id === id) : null;
+    if (id && !sg) return;
+    state.editing = { type: 'song', id: sg ? sg.id : null };
+    showFlds('song');
+    $('#sheetTitle').textContent = sg ? '曲を編集' : '曲を追加';
+    $('#save').textContent = sg ? '保存' : '追加';
+    $('#fTitle').value = sg ? sg.title : '';
+    $('#fTags').value = sg ? sg.tags.join(', ') : '';
+    $('#fUrl').value = sg ? sg.url : '';
+    $('#fNote').value = sg ? sg.note : '';
+    $('#fFav').checked = sg ? sg.fav : false;
+    renderTagSug();
+    sheetFile = { pending: null, remove: false }; renderFileField();
+    sheetImg.sgCover = { pending: null, remove: false };
+    sheetImg.sgLyric = { pending: null, remove: false };
+    renderImgField('sg', 'Cover', 'scover', sg ? sg.id : null, sg ? sg.coverName : null, sg ? sg.coverSize : null);
+    renderImgField('sg', 'Lyric', 'slyric', sg ? sg.id : null, sg ? sg.lyricName : null, sg ? sg.lyricSize : null);
+    setErr(''); setSaving(false); resetDel();
+    $('#del').hidden = !sg;
+    openOverlay('#fTitle');
+  }
+  function saveSongBase() {
     const title = $('#fTitle').value.trim();
-    if (!title) { setErr('曲名を入力してください。'); $('#fTitle').focus(); return; }
+    if (!title) { setErr('曲名を入力してください。'); $('#fTitle').focus(); return null; }
     let url = $('#fUrl').value.trim();
     if (url) {
       if (!/^https?:\/\//i.test(url)) url = 'https://' + url;
       url = safeUrl(url);
-      if (!url) { setErr('リンクは https:// から始まるURLを入力してください。'); $('#fUrl').focus(); return; }
+      if (!url) { setErr('リンクは https:// から始まるURLを入力してください。'); $('#fUrl').focus(); return null; }
     }
-    const existing = state.editingId ? state.songs.find((x) => x.id === state.editingId) : null;
-    const song = {
-      id: existing ? existing.id : newId(),
-      title: title.slice(0, 120),
-      artist: $('#fArtist').value.trim().slice(0, 120),
-      tags: parseTags($('#fTags').value),
-      note: $('#fNote').value.trim().slice(0, 1000),
-      url: url,
-      fav: $('#fFav').checked,
-      createdAt: existing ? existing.createdAt : Date.now()
-    };
-    const hadFile = !!(existing && state.fileMeta.has(existing.id));
+    const existing = state.editing.id ? state.songs.find((x) => x.id === state.editing.id) : null;
+    const base = existing ? Object.assign({}, existing) : cleanSong(newId(), { albumId: state.nav.albumId, createdAt: Date.now() });
+    base.title = title.slice(0, 120);
+    base.tags = parseTags($('#fTags').value);
+    base.note = $('#fNote').value.trim().slice(0, 1000);
+    base.url = url;
+    base.fav = $('#fFav').checked;
+    return base;
+  }
+
+  function openOverlay(focusSel) {
+    lastFocus = document.activeElement;
+    overlay.hidden = false;
+    document.body.classList.add('locked');
+    $('.sheet-body').scrollTop = 0;
+    const f = $(focusSel); if (f) f.focus();
+  }
+
+  /* ---------- 保存・削除（共通ディスパッチ） ---------- */
+  async function onSave() {
+    const type = state.editing.type;
+    if (type === 'composer') {
+      const c = saveComposer(); if (!c) return;
+      setErr(''); setSaving(true);
+      try { await persistComposer(c); closeSheet(); toast(state.editing.id ? '保存しました' : '追加しました'); flashRow(c.id); }
+      catch (e) { setErr(errMsg(e)); setSaving(false); }
+      return;
+    }
+    if (type === 'album') {
+      const a = saveAlbumBase(); if (!a) return;
+      setErr(''); setSaving(true);
+      try {
+        await applyImgField(a, 'al', 'Cover', 'acover');
+        await applyImgField(a, 'al', 'Lyric', 'alyric');
+        await persistAlbum(a);
+        closeSheet(); toast(state.editing.id ? '保存しました' : '追加しました'); flashRow(a.id);
+      } catch (e) { setErr(errMsg(e)); setSaving(false); }
+      return;
+    }
+    // song
+    const s = saveSongBase(); if (!s) return;
+    const hadFile = !!(state.editing.id && state.fileMeta.has(state.editing.id));
     const pend = sheetFile.pending, drop = sheetFile.remove && hadFile;
     setErr(''); setSaving(true);
     if (pend) {
-      try { await filePutRec(song.id, pend); }
-      catch (e) { setErr(fileErrMsg(e)); setSaving(false); return; }
+      try {
+        const meta = await filePutRec(s.id, pend);
+        if (state.backend === 'db' && meta) { s.fileName = meta.name; s.fileType = meta.type; s.fileSize = meta.size; }
+      } catch (e) { setErr(fileErrMsg(e)); setSaving(false); return; }
+    } else if (drop && state.backend === 'db') {
+      s.fileName = null; s.fileType = null; s.fileSize = null;
     }
     try {
-      await persist(song);
-      if (drop) dropFile(song.id);
-      else if (pend && cur.id === song.id) closePlayer();
+      await applyImgField(s, 'sg', 'Cover', 'scover');
+      await applyImgField(s, 'sg', 'Lyric', 'slyric');
+      await persistSong(s);
+      if (drop) await dropFile(s.id);
+      else if (pend && cur.id === s.id) closePlayer();
       closeSheet();
-      toast(existing ? '保存しました' : '追加しました');
-      flashRow(song.id);
+      toast(state.editing.id ? '保存しました' : '追加しました');
+      flashRow(s.id);
     } catch (e) {
-      if (pend && !hadFile) { fileDel(song.id).catch(() => {}); state.fileMeta.delete(song.id); }
+      if (pend && !hadFile) { dropFile(s.id).catch(() => {}); state.fileMeta.delete(s.id); }
       setErr(errMsg(e)); setSaving(false);
     }
   }
+  async function applyImgField(item, prefix, cap, kind) {
+    const f = sheetImg[prefix + cap];
+    if (f.pending) {
+      const meta = await imgPutRec(kind, item.id, f.pending);
+      if (state.backend === 'db') {
+        if (kind === 'acover' || kind === 'scover') { item.coverName = meta.name; item.coverType = meta.type; item.coverSize = meta.size; }
+        else { item.lyricName = meta.name; item.lyricType = meta.type; item.lyricSize = meta.size; }
+      }
+    } else if (f.remove) {
+      await imgDrop(kind, item.id);
+      if (state.backend === 'db') {
+        if (kind === 'acover' || kind === 'scover') { item.coverName = null; item.coverType = null; item.coverSize = null; }
+        else { item.lyricName = null; item.lyricType = null; item.lyricSize = null; }
+      }
+    }
+  }
+  function hasImage(kind, id, dbName) {
+    if (state.backend === 'db') return !!dbName;
+    return state.imgMeta.has(kind + ':' + id);
+  }
+
   async function onDelete() {
     if (!delArmed) {
       delArmed = true; $('#del').textContent = 'もう一度押して削除';
@@ -850,25 +1396,21 @@ textarea.field-ctl { padding: 10px 14px; min-height: 92px; resize: vertical; lin
     }
     setSaving(true);
     try {
-      const delId = state.editingId;
-      await removeSong(delId);
-      dropFile(delId);
+      const type = state.editing.type, id = state.editing.id;
+      if (type === 'composer') await removeComposer(id);
+      else if (type === 'album') await removeAlbum(id);
+      else { await removeSong(id); await dropFile(id); }
       closeSheet(); toast('削除しました');
     } catch (e) {
       setErr(errMsg(e)); setSaving(false); resetDel();
     }
   }
 
-  /* ---------- sheet helpers: artist / tag suggestions ---------- */
-  function fillArtists() {
-    const counts = new Map();
-    state.songs.forEach((s) => { if (s.artist) counts.set(s.artist, (counts.get(s.artist) || 0) + 1); });
-    const names = Array.from(counts.keys()).sort((a, b) => (counts.get(b) - counts.get(a)) || coll.compare(a, b)).slice(0, 200);
-    $('#artistList').replaceChildren(...names.map((a) => h('option', { value: a })));
-  }
+  /* ---------- sheet helpers: タグ候補 ---------- */
   function renderTagSug() {
+    const songs = state.songs.filter((s) => s.albumId === state.nav.albumId);
     const counts = new Map();
-    state.songs.forEach((s) => s.tags.forEach((t) => counts.set(t, (counts.get(t) || 0) + 1)));
+    songs.forEach((s) => s.tags.forEach((t) => counts.set(t, (counts.get(t) || 0) + 1)));
     const chosen = new Set(parseTags($('#fTags').value));
     const tags = Array.from(counts.keys()).sort((a, b) => (counts.get(b) - counts.get(a)) || coll.compare(a, b)).slice(0, 16);
     $('#tagSug').replaceChildren(...tags.map((t) => h('button', {
@@ -876,28 +1418,39 @@ textarea.field-ctl { padding: 10px 14px; min-height: 92px; resize: vertical; lin
     }, t)));
   }
   function toggleTag(t) {
-    const cur = parseTags($('#fTags').value);
-    const i = cur.indexOf(t);
-    if (i >= 0) cur.splice(i, 1);
-    else if (cur.length >= 12) { setErr('タグは12個までです。'); return; }
-    else cur.push(t);
+    const cur2 = parseTags($('#fTags').value);
+    const i = cur2.indexOf(t);
+    if (i >= 0) cur2.splice(i, 1);
+    else if (cur2.length >= 12) { setErr('タグは12個までです。'); return; }
+    else cur2.push(t);
     setErr('');
-    $('#fTags').value = cur.join(', ');
+    $('#fTags').value = cur2.join(', ');
     renderTagSug();
     const btn = Array.from($('#tagSug').children).find((b) => b.textContent === t);
     if (btn) btn.focus();
   }
 
   /* ---------- 曲ファイル（IndexedDB。曲リストとは別にこのブラウザだけに保存） ---------- */
-  const MAX_FILE = 60 * 1024 * 1024;
+  const MAX_FILE_LOCAL = 60 * 1024 * 1024;
+  const MAX_FILE_DB = 50 * 1024 * 1024;
+  const MAX_IMG_LOCAL = 15 * 1024 * 1024;
+  const MAX_IMG_DB = 12 * 1024 * 1024;
+  function maxFile() { return state.backend === 'db' ? MAX_FILE_DB : MAX_FILE_LOCAL; }
+  function maxImg() { return state.backend === 'db' ? MAX_IMG_DB : MAX_IMG_LOCAL; }
   const EXT_TYPE = { mp3: 'audio/mpeg', m4a: 'audio/mp4', aac: 'audio/aac', wav: 'audio/wav', flac: 'audio/flac', ogg: 'audio/ogg', opus: 'audio/ogg' };
   let dbPromise = null;
   function idb() {
     if (dbPromise) return dbPromise;
     dbPromise = new Promise((resolve, reject) => {
       if (!window.indexedDB) { reject(new Error('unsupported')); return; }
-      const rq = indexedDB.open('song-vault-files', 1);
-      rq.onupgradeneeded = () => { rq.result.createObjectStore('meta'); rq.result.createObjectStore('blobs'); };
+      const rq = indexedDB.open('song-vault-files', 2);
+      rq.onupgradeneeded = () => {
+        const db = rq.result;
+        if (!db.objectStoreNames.contains('meta')) db.createObjectStore('meta');
+        if (!db.objectStoreNames.contains('blobs')) db.createObjectStore('blobs');
+        if (!db.objectStoreNames.contains('imgmeta')) db.createObjectStore('imgmeta');
+        if (!db.objectStoreNames.contains('imgblobs')) db.createObjectStore('imgblobs');
+      };
       rq.onsuccess = () => resolve(rq.result);
       rq.onerror = () => reject(rq.error);
     });
@@ -922,6 +1475,14 @@ textarea.field-ctl { padding: 10px 14px; min-height: 92px; resize: vertical; lin
       return out;
     });
   }
+  function imgMetaList() {
+    return tx(['imgmeta'], 'readonly', (t) => {
+      const out = new Map();
+      const rq = t.objectStore('imgmeta').openCursor();
+      rq.onsuccess = () => { const c = rq.result; if (c) { out.set(c.key, c.value); c.continue(); } };
+      return out;
+    });
+  }
   function fileGet(id) {
     return tx(['blobs', 'meta'], 'readonly', (t) => {
       const o = {};
@@ -940,6 +1501,13 @@ textarea.field-ctl { padding: 10px 14px; min-height: 92px; resize: vertical; lin
   }
   function filePutRec(id, f) {
     const type = guessType(f);
+    if (state.backend === 'db') {
+      return state.sb.storage.from(FILE_BUCKET).upload(id, f, { upsert: true, contentType: type })
+        .then((res) => {
+          if (res.error) throw sbErr(res.error);
+          return { name: f.name.slice(0, 200), type: type, size: f.size };
+        });
+    }
     const meta = { name: f.name.slice(0, 200), type: type, size: f.size, addedAt: Date.now() };
     return tx(['blobs', 'meta'], 'readwrite', (t) => {
       t.objectStore('blobs').put(f.slice(0, f.size, type), id);
@@ -951,23 +1519,33 @@ textarea.field-ctl { padding: 10px 14px; min-height: 92px; resize: vertical; lin
   }
   function fileErrMsg(e) {
     if (e && e.name === 'QuotaExceededError') return 'ブラウザの保存容量が足りず、曲ファイルを保存できませんでした。';
+    if (e && e.code === 'invalid_argument') return '曲ファイルを保存できませんでした（アクセス権限を確認してください）。';
+    if (e && e.code === 'db_failed') return '曲ファイルを保存できませんでした。' + (e.message ? '（' + e.message + '）' : '');
     return 'このブラウザでは曲ファイルを保存できませんでした。もう一度お試しください。';
   }
-  function dropFile(id) {
-    if (state.fileMeta.has(id)) { fileDel(id).catch(() => {}); state.fileMeta.delete(id); }
+  async function dropFile(id) {
     if (cur.id === id) closePlayer();
+    if (state.backend === 'db') {
+      try { await state.sb.storage.from(FILE_BUCKET).remove([id]); } catch (e) { /* 無視 */ }
+      return;
+    }
+    if (state.fileMeta.has(id)) { fileDel(id).catch(() => {}); state.fileMeta.delete(id); }
   }
   function loadFiles() {
+    if (state.backend === 'db') return;
     fileList().then((m) => { state.fileMeta = m; render(); })
       .catch(() => { $('#fFileFld').hidden = true; });
   }
+  function loadImgMeta() {
+    if (state.backend === 'db') return;
+    imgMetaList().then((m) => { state.imgMeta = m; render(); }).catch(() => { /* 無視 */ });
+  }
 
   /* 追加画面の「曲ファイル」欄 */
-  let sheetFile = { pending: null, remove: false };
   function fmtSize(n) { return n >= 1048576 ? (n / 1048576).toFixed(1) + 'MB' : Math.max(1, Math.round(n / 1024)) + 'KB'; }
   function fileInfo() {
     if (sheetFile.pending) return { name: sheetFile.pending.name, size: sheetFile.pending.size };
-    const m = state.editingId && !sheetFile.remove ? state.fileMeta.get(state.editingId) : null;
+    const m = state.editing.id && !sheetFile.remove ? state.fileMeta.get(state.editing.id) : null;
     return m ? { name: m.name, size: m.size } : null;
   }
   function renderFileField() {
@@ -975,18 +1553,83 @@ textarea.field-ctl { padding: 10px 14px; min-height: 92px; resize: vertical; lin
     $('#fFileName').textContent = f ? f.name + '（' + fmtSize(f.size) + '）' : '未選択';
     $('#fFileBtn').textContent = f ? 'ファイルを変更' : 'ファイルを選ぶ';
     $('#fFileClear').hidden = !f;
+    const max = Math.round(maxFile() / (1024 * 1024));
+    if (state.backend === 'db') {
+      $('#fFileHint').textContent = 'mp3・m4a・wavなどの音声ファイル（' + max + 'MBまで）。どの端末からでも聴けます。バックアップには含まれません。';
+    } else {
+      $('#fFileHint').textContent = 'mp3・m4a・wavなどの音声ファイル（' + max + 'MBまで）。このブラウザの中に保存され、バックアップには含まれません。';
+    }
   }
   function checkFile(f) {
     const okType = (f.type && f.type.indexOf('audio/') === 0) || /\.(mp3|m4a|aac|wav|flac|ogg|opus)$/i.test(f.name);
     if (!okType) return '音声ファイル（mp3・m4a・wavなど）を選んでください。';
     if (f.size === 0) return 'ファイルが空です。';
-    if (f.size > MAX_FILE) return '曲ファイルは60MBまでです。';
+    const max = maxFile();
+    if (f.size > max) return '曲ファイルは' + Math.round(max / (1024 * 1024)) + 'MBまでです。';
     return '';
+  }
+
+  /* ---------- 追加画面のジャケット・歌詞カード欄（汎用） ---------- */
+  function imgFieldIds(prefix, cap) {
+    return {
+      btn: '#' + prefix + cap + 'Btn', name: '#' + prefix + cap + 'Name', clear: '#' + prefix + cap + 'Clear', file: '#' + prefix + cap + 'File'
+    };
+  }
+  function imgFieldInfo(prefix, cap, kind, id, curName, curSize) {
+    const f = sheetImg[prefix + cap];
+    if (f.pending) return { name: f.pending.name, size: f.pending.size };
+    if (f.remove || !id) return null;
+    if (state.backend === 'db') return curName ? { name: curName, size: curSize } : null;
+    const m = state.imgMeta.get(kind + ':' + id);
+    return m ? { name: m.name, size: m.size } : null;
+  }
+  function renderImgField(prefix, cap, kind, id, curName, curSize) {
+    const ids = imgFieldIds(prefix, cap);
+    const info = imgFieldInfo(prefix, cap, kind, id, curName, curSize);
+    $(ids.name).textContent = info ? info.name + (info.size ? '（' + fmtSize(info.size) + '）' : '') : '未選択';
+    $(ids.btn).textContent = info ? '画像を変更' : '画像を選ぶ';
+    $(ids.clear).hidden = !info;
+  }
+  function checkImg(f) {
+    const okType = (f.type && f.type.indexOf('image/') === 0) || /\.(jpg|jpeg|png|gif|webp)$/i.test(f.name);
+    if (!okType) return '画像ファイル（jpg・png・webpなど）を選んでください。';
+    if (f.size === 0) return 'ファイルが空です。';
+    const max = maxImg();
+    if (f.size > max) return '画像は' + Math.round(max / (1024 * 1024)) + 'MBまでです。';
+    return '';
+  }
+  function imgKindOf(prefix, cap) {
+    return (prefix === 'al' ? 'a' : 's') + (cap === 'Cover' ? 'cover' : 'lyric');
+  }
+  function wireImgField(prefix, cap) {
+    const ids = imgFieldIds(prefix, cap);
+    const kind = imgKindOf(prefix, cap);
+    $(ids.btn).addEventListener('click', () => { $(ids.file).click(); });
+    $(ids.file).addEventListener('change', (e) => {
+      const f = e.target.files && e.target.files[0];
+      e.target.value = '';
+      if (!f) return;
+      const msg = checkImg(f);
+      if (msg) { setErr(msg); return; }
+      setErr('');
+      sheetImg[prefix + cap].pending = f; sheetImg[prefix + cap].remove = false;
+      const curId = state.editing.id;
+      const cur3 = prefix === 'al' ? state.albums.find((x) => x.id === curId) : state.songs.find((x) => x.id === curId);
+      renderImgField(prefix, cap, kind, curId, cur3 ? (cap === 'Cover' ? cur3.coverName : cur3.lyricName) : null, cur3 ? (cap === 'Cover' ? cur3.coverSize : cur3.lyricSize) : null);
+    });
+    $(ids.clear).addEventListener('click', () => {
+      const curId = state.editing.id;
+      const had = !!(curId && hasImage(kind, curId, prefix === 'al'
+        ? (cap === 'Cover' ? (state.albums.find((x) => x.id === curId) || {}).coverName : (state.albums.find((x) => x.id === curId) || {}).lyricName)
+        : (cap === 'Cover' ? (state.songs.find((x) => x.id === curId) || {}).coverName : (state.songs.find((x) => x.id === curId) || {}).lyricName)));
+      sheetImg[prefix + cap].pending = null; sheetImg[prefix + cap].remove = had;
+      renderImgField(prefix, cap, kind, curId, null, null);
+    });
   }
 
   /* ---------- プレーヤー ---------- */
   const audio = $('#audio');
-  let cur = { id: null, url: null };
+  let cur = { id: null, url: null, revoke: false };
   let seeking = false;
   function fmtTime(t) {
     if (!isFinite(t) || t < 0) t = 0;
@@ -1007,21 +1650,17 @@ textarea.field-ctl { padding: 10px 14px; min-height: 92px; resize: vertical; lin
   function setMedia(sg) {
     if (!('mediaSession' in navigator)) return;
     try {
-      navigator.mediaSession.metadata = new MediaMetadata({ title: sg ? sg.title : '', artist: sg ? sg.artist : '' });
+      navigator.mediaSession.metadata = new MediaMetadata({ title: sg ? sg.title : '' });
       navigator.mediaSession.setActionHandler('play', () => { audio.play().catch(() => {}); });
       navigator.mediaSession.setActionHandler('pause', () => { audio.pause(); });
     } catch (e) { /* 無視 */ }
   }
-  async function playSong(id) {
-    if (cur.id === id) { if (audio.paused) audio.play().catch(() => {}); else audio.pause(); return; }
-    let rec;
-    try { rec = await fileGet(id); } catch (e) { toast('曲ファイルを読み込めませんでした。'); return; }
-    if (!rec || !rec.blob) { toast('このブラウザには曲ファイルがありません。'); return; }
-    if (cur.url) URL.revokeObjectURL(cur.url);
-    cur = { id: id, url: URL.createObjectURL(rec.blob) };
-    audio.src = cur.url;
+  async function startPlayback(id, url, revoke) {
+    if (cur.url && cur.revoke) URL.revokeObjectURL(cur.url);
+    cur = { id: id, url: url, revoke: !!revoke };
+    audio.src = url;
     const sg = state.songs.find((x) => x.id === id);
-    $('#pTitle').textContent = sg ? sg.title + (sg.artist ? ' / ' + sg.artist : '') : '';
+    $('#pTitle').textContent = sg ? sg.title : '';
     $('#pSeek').value = 0; $('#pTime').textContent = '0:00 / 0:00';
     $('#player').hidden = false;
     document.body.classList.add('has-player');
@@ -1030,11 +1669,25 @@ textarea.field-ctl { padding: 10px 14px; min-height: 92px; resize: vertical; lin
     catch (e) { toast('再生できませんでした。ファイル形式に対応していない可能性があります。'); }
     syncPlay();
   }
+  async function playSong(id) {
+    if (cur.id === id) { if (audio.paused) audio.play().catch(() => {}); else audio.pause(); return; }
+    if (state.backend === 'db') {
+      if (!state.fileMeta.has(id)) { toast('この曲にはファイルがありません。'); return; }
+      const { data } = state.sb.storage.from(FILE_BUCKET).getPublicUrl(id);
+      if (!data || !data.publicUrl) { toast('曲ファイルを読み込めませんでした。'); return; }
+      await startPlayback(id, data.publicUrl, false);
+      return;
+    }
+    let rec;
+    try { rec = await fileGet(id); } catch (e) { toast('曲ファイルを読み込めませんでした。'); return; }
+    if (!rec || !rec.blob) { toast('このブラウザには曲ファイルがありません。'); return; }
+    await startPlayback(id, URL.createObjectURL(rec.blob), true);
+  }
   function closePlayer() {
     audio.pause();
     audio.removeAttribute('src'); audio.load();
-    if (cur.url) URL.revokeObjectURL(cur.url);
-    cur = { id: null, url: null };
+    if (cur.url && cur.revoke) URL.revokeObjectURL(cur.url);
+    cur = { id: null, url: null, revoke: false };
     $('#player').hidden = true;
     document.body.classList.remove('has-player');
     syncPlay();
@@ -1065,7 +1718,7 @@ textarea.field-ctl { padding: 10px 14px; min-height: 92px; resize: vertical; lin
     el.textContent = msg || '';
     el.className = 'status' + (bad ? ' bad' : '');
   }
-  function bkCount() { $('#bkCount').textContent = '現在 ' + state.songs.length + ' 曲'; }
+  function bkCount() { $('#bkCount').textContent = '現在 作曲者' + state.composers.length + '人・アルバム' + state.albums.length + '枚・曲' + state.songs.length + '曲'; }
   function openBackup() {
     bkStatus('', false); bkCount();
     bkLastFocus = document.activeElement;
@@ -1079,7 +1732,7 @@ textarea.field-ctl { padding: 10px 14px; min-height: 92px; resize: vertical; lin
     if (bkLastFocus && bkLastFocus.focus && document.contains(bkLastFocus)) bkLastFocus.focus();
   }
   function bkReady() {
-    if (!state.loaded) { bkStatus('曲リストを読み込み中です。少し待ってからもう一度お試しください。', true); return false; }
+    if (!state.loaded) { bkStatus('データを読み込み中です。少し待ってからもう一度お試しください。', true); return false; }
     return true;
   }
   function ymd() {
@@ -1087,12 +1740,17 @@ textarea.field-ctl { padding: 10px 14px; min-height: 92px; resize: vertical; lin
     return d.getFullYear() + p(d.getMonth() + 1) + p(d.getDate());
   }
   function exportText() {
-    return JSON.stringify({ app: 'song-vault', version: 1, exportedAt: new Date().toISOString(), songs: state.songs }, null, 2);
+    const composers = state.composers.map((c) => ({ id: c.id, name: c.name, note: c.note, createdAt: c.createdAt }));
+    const albums = state.albums.map((a) => ({ id: a.id, composerId: a.composerId, name: a.name, note: a.note, createdAt: a.createdAt }));
+    const songs = state.songs.map((s) => ({
+      id: s.id, albumId: s.albumId, title: s.title, tags: s.tags, note: s.note, url: s.url, fav: s.fav, createdAt: s.createdAt
+    }));
+    return JSON.stringify({ app: 'song-vault', version: 2, exportedAt: new Date().toISOString(), composers: composers, albums: albums, songs: songs }, null, 2);
   }
 
   async function doExport() {
     if (!bkReady()) return;
-    if (!state.songs.length) { bkStatus('書き出す曲がまだありません。', true); return; }
+    if (!state.composers.length) { bkStatus('書き出す作曲者がまだいません。', true); return; }
     const text = exportText();
     const name = 'song-vault-' + ymd() + '.json';
     let file = null;
@@ -1119,7 +1777,7 @@ textarea.field-ctl { padding: 10px 14px; min-height: 92px; resize: vertical; lin
 
   async function doCopy() {
     if (!bkReady()) return;
-    if (!state.songs.length) { bkStatus('コピーする曲がまだありません。', true); return; }
+    if (!state.composers.length) { bkStatus('コピーする作曲者がまだいません。', true); return; }
     const text = exportText();
     try {
       await navigator.clipboard.writeText(text);
@@ -1136,19 +1794,15 @@ textarea.field-ctl { padding: 10px 14px; min-height: 92px; resize: vertical; lin
     }
   }
 
-  async function addMany(list) {
+  async function importAll(composers, albums, songs) {
     if (state.backend === 'db') {
-      let done = 0;
-      for (const sg of list) {
-        const body = Object.assign({}, sg); delete body.id;
-        try { await state.db.collection('songs').doc(sg.id).set(body); done++; }
-        catch (e) { return { done: done, error: e }; }
-      }
-      return { done: done };
+      for (const c of composers) { const { error } = await state.sb.from('composers').upsert(composerToRow(c)); if (error) throw sbErr(error); }
+      for (const a of albums) { const { error } = await state.sb.from('albums').upsert(albumToRow(a)); if (error) throw sbErr(error); }
+      for (const s of songs) { const { error } = await state.sb.from('songs').upsert(songToRow(s)); if (error) throw sbErr(error); }
+      await refreshAll();
+      return;
     }
-    const next = state.songs.concat(list);
-    writeLocal(next); state.songs = next; render();
-    return { done: list.length };
+    writeLocalAll2(state.composers.concat(composers), state.albums.concat(albums), state.songs.concat(songs));
   }
 
   async function importText(text) {
@@ -1156,45 +1810,62 @@ textarea.field-ctl { padding: 10px 14px; min-height: 92px; resize: vertical; lin
     let data;
     try { data = JSON.parse(text); }
     catch (e) { bkStatus('JSONとして読み取れませんでした。書き出したファイルの内容か確認してください。', true); return false; }
-    const arr = Array.isArray(data) ? data : (data && Array.isArray(data.songs) ? data.songs : null);
-    if (!arr) { bkStatus('曲のデータが見つかりませんでした。', true); return false; }
-    if (arr.length > 5000) { bkStatus('曲が多すぎます（5000曲まで）。', true); return false; }
-
-    const key = (x) => norm(x.title) + '|' + norm(x.artist);
-    const ids = new Set(state.songs.map((x) => x.id));
-    const keys = new Set(state.songs.map(key));
-    const fresh = [];
-    let skipped = 0, bad = 0;
-    for (const raw of arr) {
+    if (!data || !Array.isArray(data.composers) || !Array.isArray(data.albums) || !Array.isArray(data.songs)) {
+      bkStatus('このファイルは今の形式（作曲者・アルバム・曲）に対応していません。', true); return false;
+    }
+    if (data.composers.length > 2000 || data.albums.length > 5000 || data.songs.length > 20000) {
+      bkStatus('データが多すぎます。', true); return false;
+    }
+    const cIds = new Set(state.composers.map((x) => x.id));
+    const aIds = new Set(state.albums.map((x) => x.id));
+    const sIds = new Set(state.songs.map((x) => x.id));
+    const freshC = [], freshA = [], freshS = [];
+    let bad = 0;
+    const idMapC = new Map(), idMapA = new Map();
+    for (const raw of data.composers) {
       if (!raw || typeof raw !== 'object') { bad++; continue; }
-      const id = (typeof raw.id === 'string' && /^[A-Za-z0-9]{1,40}$/.test(raw.id)) ? raw.id : newId();
-      const sg = clean(id, raw);
-      if (!sg.title) { bad++; continue; }
-      if (ids.has(sg.id) || keys.has(key(sg))) { skipped++; continue; }
-      if (!sg.createdAt) sg.createdAt = Date.now();
-      ids.add(sg.id); keys.add(key(sg)); fresh.push(sg);
+      let id = (typeof raw.id === 'string' && /^[A-Za-z0-9]{1,40}$/.test(raw.id)) ? raw.id : newId();
+      if (cIds.has(id)) { id = newId(); }
+      idMapC.set(raw.id, id);
+      const c = cleanComposer(id, raw);
+      if (!c.name) { bad++; continue; }
+      cIds.add(id); freshC.push(c);
+    }
+    for (const raw of data.albums) {
+      if (!raw || typeof raw !== 'object') { bad++; continue; }
+      let id = (typeof raw.id === 'string' && /^[A-Za-z0-9]{1,40}$/.test(raw.id)) ? raw.id : newId();
+      if (aIds.has(id)) { id = newId(); }
+      idMapA.set(raw.id, id);
+      const composerId = idMapC.has(raw.composerId) ? idMapC.get(raw.composerId) : raw.composerId;
+      const a = cleanAlbum(id, Object.assign({}, raw, { composerId: composerId }));
+      if (!a.name || !a.composerId) { bad++; continue; }
+      aIds.add(id); freshA.push(a);
+    }
+    for (const raw of data.songs) {
+      if (!raw || typeof raw !== 'object') { bad++; continue; }
+      let id = (typeof raw.id === 'string' && /^[A-Za-z0-9]{1,40}$/.test(raw.id)) ? raw.id : newId();
+      if (sIds.has(id)) { id = newId(); }
+      const albumId = idMapA.has(raw.albumId) ? idMapA.get(raw.albumId) : raw.albumId;
+      const s = cleanSong(id, Object.assign({}, raw, { albumId: albumId }));
+      if (!s.title || !s.albumId) { bad++; continue; }
+      sIds.add(id); freshS.push(s);
     }
 
-    let res;
-    try { res = fresh.length ? await addMany(fresh) : { done: 0 }; }
+    try { await importAll(freshC, freshA, freshS); }
     catch (e) { bkStatus(errMsg(e), true); return false; }
 
-    const extra = (skipped ? '（登録済みの' + skipped + '曲はスキップ）' : '') + (bad ? '（読み取れなかった' + bad + '件）' : '');
+    const extra = bad ? '（読み取れなかった' + bad + '件）' : '';
     bkCount();
-    if (res.error) {
-      bkStatus(res.done + '曲を追加したところで失敗しました。' + errMsg(res.error), true);
+    if (!freshC.length && !freshA.length && !freshS.length) {
+      bkStatus('追加できるデータがありませんでした。' + extra, true);
       return false;
     }
-    if (res.done === 0) {
-      bkStatus(skipped ? 'すべて登録済みの曲でした。' + extra : '追加できる曲がありませんでした。' + extra, !skipped);
-      return skipped > 0;
-    }
-    bkStatus(res.done + '曲を追加しました。' + extra, false);
+    bkStatus('作曲者' + freshC.length + '人・アルバム' + freshA.length + '枚・曲' + freshS.length + '曲を追加しました。' + extra, false);
     return true;
   }
 
   /* ---------- wiring ---------- */
-  $('#add').addEventListener('click', () => openSheet());
+  $('#add').addEventListener('click', () => openAddSheet());
   $('#save').addEventListener('click', onSave);
   $('#cancel').addEventListener('click', closeSheet);
   $('#del').addEventListener('click', onDelete);
@@ -1228,7 +1899,7 @@ textarea.field-ctl { padding: 10px 14px; min-height: 92px; resize: vertical; lin
     const input = e.target;
     const f = input.files && input.files[0];
     if (!f) return;
-    if (f.size > 5 * 1024 * 1024) { input.value = ''; bkStatus('ファイルが大きすぎます（5MBまで）。', true); return; }
+    if (f.size > 8 * 1024 * 1024) { input.value = ''; bkStatus('ファイルが大きすぎます（8MBまで）。', true); return; }
     let text = null;
     try { text = await f.text(); } catch (err) { text = null; }
     input.value = '';
@@ -1253,10 +1924,12 @@ textarea.field-ctl { padding: 10px 14px; min-height: 92px; resize: vertical; lin
     renderFileField();
   });
   $('#fFileClear').addEventListener('click', () => {
-    const had = !!(state.editingId && state.fileMeta.has(state.editingId));
+    const had = !!(state.editing.id && state.fileMeta.has(state.editing.id));
     sheetFile.pending = null; sheetFile.remove = had;
     renderFileField();
   });
+  wireImgField('al', 'Cover'); wireImgField('al', 'Lyric');
+  wireImgField('sg', 'Cover'); wireImgField('sg', 'Lyric');
   $('#pPlay').addEventListener('click', () => { if (audio.paused) audio.play().catch(() => {}); else audio.pause(); });
   $('#pClose').addEventListener('click', closePlayer);
   audio.addEventListener('play', syncPlay);
@@ -1297,7 +1970,7 @@ textarea.field-ctl { padding: 10px 14px; min-height: 92px; resize: vertical; lin
   function loadSort() {
     try {
       const v = localStorage.getItem(SORT_KEY);
-      if (v === 'new' || v === 'title' || v === 'artist') { state.sort = v; $('#sort').value = v; }
+      if (v === 'new' || v === 'title') { state.sort = v; $('#sort').value = v; }
     } catch (e) { /* 保存された並び順が読めなくても続行 */ }
   }
   function saveSort() { try { localStorage.setItem(SORT_KEY, state.sort); } catch (e) { /* 無視 */ } }
@@ -1325,26 +1998,21 @@ textarea.field-ctl { padding: 10px 14px; min-height: 92px; resize: vertical; lin
   /* ---------- start ---------- */
   loadSort();
   render();
-  loadFiles();
 
   async function init() {
-    let db = null;
-    try {
-      if (window.claude && typeof window.claude.use === 'function') db = await window.claude.use('db');
-    } catch (e) { db = null; }
-    if (db) {
-      state.db = db; state.backend = 'db';
-      db.collection('songs').onSnapshot((snap) => {
-        state.songs = snap.docs.map((d) => clean(d.id, d.data()));
-        state.loaded = true; render();
-      }, () => {
-        state.loaded = true; render();
-        toast('曲リストを読み込めませんでした。ページを開き直してください。');
-      });
+    const sb = createSupabaseClient();
+    if (sb) {
+      state.sb = sb; state.backend = 'db';
+      $('#tipFile').textContent = '曲の追加画面で音声ファイルを選ぶと、リストの再生ボタンで聴けます。ジャケットや歌詞カードの画像も、どの端末からでも見られます。';
+      $('#tipBackup').textContent = 'データはクラウドに保存され、他の端末でも自動的に反映されます。念のため、左下の「バックアップ」でデータをファイルに書き出しておくこともできます。';
+      await refreshAll();
+      subscribeRealtime();
     } else {
       state.backend = 'local';
-      state.songs = readLocal();
+      const all = readLocalAll();
+      state.composers = all.composers; state.albums = all.albums; state.songs = all.songs;
       state.loaded = true; render();
+      loadFiles(); loadImgMeta();
     }
   }
   init();
