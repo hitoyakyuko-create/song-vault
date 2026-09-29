@@ -441,6 +441,14 @@ h1 { letter-spacing: .06em; }
   pointer-events: none;
 }
 .fab-wrap { position: fixed; }
+
+/* 曲の長さ（曲名の右端） */
+.name-line { display: flex; align-items: flex-start; gap: 10px; }
+.name-line .name { flex: 1; min-width: 0; }
+.dur {
+  flex: none; color: var(--muted); font-size: .82rem; line-height: 1.7;
+  font-variant-numeric: tabular-nums; white-space: nowrap;
+}
 </style>
 </head>
 <body>
@@ -805,6 +813,10 @@ h1 { letter-spacing: .06em; }
       return (x.protocol === 'http:' || x.protocol === 'https:') ? x.href : '';
     } catch (e) { return ''; }
   }
+  function cleanDuration(v) {
+    const n = Number(v);
+    return (v != null && Number.isFinite(n) && n > 0) ? Math.round(n) : null;
+  }
   function newId() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 8); }
   function norm(t) { return (t || '').normalize('NFKC').toLowerCase(); }
   function parseTags(text) {
@@ -837,7 +849,7 @@ h1 { letter-spacing: .06em; }
       id: id, albumId: str(d.albumId, 60), title: str(d.title, 120),
       tags: Array.isArray(d.tags) ? d.tags.filter((t) => typeof t === 'string' && t).slice(0, 12).map((t) => t.slice(0, 24)) : [],
       note: str(d.note, 1000), url: safeUrl(str(d.url, 500)), fav: d.fav === true, createdAt: num(d.createdAt), sortOrder: ord(d.sortOrder),
-      fileName: d.fileName || null, fileType: d.fileType || null, fileSize: Number.isFinite(d.fileSize) ? d.fileSize : null,
+      fileName: d.fileName || null, fileType: d.fileType || null, fileSize: Number.isFinite(d.fileSize) ? d.fileSize : null, duration: cleanDuration(d.duration),
       coverName: d.coverName || null, coverType: d.coverType || null, coverSize: Number.isFinite(d.coverSize) ? d.coverSize : null,
       lyricName: d.lyricName || null, lyricType: d.lyricType || null, lyricSize: Number.isFinite(d.lyricSize) ? d.lyricSize : null
     };
@@ -872,7 +884,7 @@ h1 { letter-spacing: .06em; }
   function rowToSong(row) {
     return cleanSong(row.id, {
       albumId: row.album_id, title: row.title, tags: row.tags, note: row.note, url: row.url, fav: row.fav, createdAt: row.created_at, sortOrder: row.sort_order,
-      fileName: row.file_name, fileType: row.file_type, fileSize: row.file_size,
+      fileName: row.file_name, fileType: row.file_type, fileSize: row.file_size, duration: row.duration,
       coverName: row.cover_name, coverType: row.cover_type, coverSize: row.cover_size,
       lyricName: row.lyric_name, lyricType: row.lyric_type, lyricSize: row.lyric_size
     });
@@ -880,7 +892,7 @@ h1 { letter-spacing: .06em; }
   function songToRow(s) {
     const r = {
       id: s.id, album_id: s.albumId, title: s.title, tags: s.tags, note: s.note, url: s.url, fav: s.fav, created_at: s.createdAt,
-      file_name: s.fileName, file_type: s.fileType, file_size: s.fileSize,
+      file_name: s.fileName, file_type: s.fileType, file_size: s.fileSize, duration: s.duration,
       cover_name: s.coverName, cover_type: s.coverType, cover_size: s.coverSize,
       lyric_name: s.lyricName, lyric_type: s.lyricType, lyric_size: s.lyricSize
     };
@@ -900,7 +912,9 @@ h1 { letter-spacing: .06em; }
       case 'revoked': return 'アクセス権が変わったため保存できません。ページを開き直してください。';
       case 'invalid_argument': return '保存できませんでした。編集する権限がない可能性があります。';
       case 'local_failed': return 'ブラウザに保存できませんでした。空き容量や設定を確認してください。';
-      case 'db_failed': return '保存に失敗しました。' + (e.message ? '（' + e.message + '）' : 'もう一度お試しください。');
+      case 'db_failed':
+        if (/duration/i.test(e.message || '')) return '保存できませんでした。Supabaseで曲の長さ用のSQLを実行してください。';
+        return '保存に失敗しました。' + (e.message ? '（' + e.message + '）' : 'もう一度お試しください。');
       default: return '保存に失敗しました。もう一度お試しください。';
     }
   }
@@ -1209,7 +1223,9 @@ h1 { letter-spacing: .06em; }
     const main = h('button', { class: 'row-main', type: 'button', onclick: () => openSongSheet(sg.id) },
       coverThumb('scover', sg.id, hasCover, sg.title),
       h('span', { class: 'meta' },
-        h('span', { class: 'name' }, sg.title || '（無題）'),
+        h('span', { class: 'name-line' },
+          h('span', { class: 'name' }, sg.title || '（無題）'),
+          (sg.duration && state.fileMeta.has(sg.id)) ? h('span', { class: 'dur' }, fmtTime(sg.duration)) : null),
         sg.tags.length ? h('span', { class: 'tags' }, sg.tags.map((t) => h('span', { class: 'tag' }, t))) : null));
     const play = state.fileMeta.has(sg.id) ? h('button', {
       class: 'icon-btn play', type: 'button', 'data-id': sg.id, 'aria-label': '再生',
@@ -1520,9 +1536,11 @@ h1 { letter-spacing: .06em; }
       try {
         const meta = await filePutRec(s.id, pend);
         if (state.backend === 'db' && meta) { s.fileName = meta.name; s.fileType = meta.type; s.fileSize = meta.size; }
+        s.duration = await probeDuration(pend);
       } catch (e) { setErr(fileErrMsg(e)); setSaving(false); return; }
-    } else if (drop && state.backend === 'db') {
-      s.fileName = null; s.fileType = null; s.fileSize = null;
+    } else if (drop) {
+      if (state.backend === 'db') { s.fileName = null; s.fileType = null; s.fileSize = null; }
+      s.duration = null;
     }
     try {
       await applyImgField(s, 'sg', 'Cover', 'scover');
@@ -1808,6 +1826,41 @@ h1 { letter-spacing: .06em; }
     if (!isFinite(t) || t < 0) t = 0;
     return Math.floor(t / 60) + ':' + String(Math.floor(t % 60)).padStart(2, '0');
   }
+  /* 音声ファイルの長さ（秒）をブラウザで読み取る。読めなければ null */
+  function probeDuration(file) {
+    return new Promise((resolve) => {
+      let url = null, done = false;
+      const a = new Audio();
+      const finish = (v) => {
+        if (done) return;
+        done = true; clearTimeout(timer);
+        a.removeAttribute('src'); try { a.load(); } catch (e) { /* 無視 */ }
+        if (url) URL.revokeObjectURL(url);
+        resolve(v);
+      };
+      const timer = setTimeout(() => finish(null), 8000);
+      a.preload = 'metadata';
+      a.addEventListener('loadedmetadata', () => finish(cleanDuration(a.duration)));
+      a.addEventListener('error', () => finish(null));
+      try { url = URL.createObjectURL(file); a.src = url; } catch (e) { finish(null); }
+    });
+  }
+  /* 長さが未登録の曲は、再生して長さが分かった時点で保存する */
+  async function backfillDuration(id, d) {
+    const sec = cleanDuration(d);
+    const sg = state.songs.find((x) => x.id === id);
+    if (!sec || !sg || sg.duration != null) return;
+    sg.duration = sec;
+    try {
+      if (state.backend === 'db') {
+        const { error } = await state.sb.from('songs').update({ duration: sec }).eq('id', id);
+        if (error) throw error;
+      } else {
+        writeLocalAll();
+      }
+    } catch (e) { /* 保存できなくても表示は続ける */ }
+    renderList();
+  }
   function syncPlay() {
     const playing = !!cur.id && !audio.paused;
     document.querySelectorAll('#list .play').forEach((b) => {
@@ -1916,7 +1969,7 @@ h1 { letter-spacing: .06em; }
     const composers = state.composers.map((c) => ({ id: c.id, name: c.name, note: c.note, createdAt: c.createdAt, sortOrder: c.sortOrder }));
     const albums = state.albums.map((a) => ({ id: a.id, composerId: a.composerId, name: a.name, note: a.note, createdAt: a.createdAt, sortOrder: a.sortOrder }));
     const songs = state.songs.map((s) => ({
-      id: s.id, albumId: s.albumId, title: s.title, tags: s.tags, note: s.note, url: s.url, fav: s.fav, createdAt: s.createdAt, sortOrder: s.sortOrder
+      id: s.id, albumId: s.albumId, title: s.title, tags: s.tags, note: s.note, url: s.url, fav: s.fav, createdAt: s.createdAt, sortOrder: s.sortOrder, duration: s.duration
     }));
     return JSON.stringify({ app: 'song-vault', version: 2, exportedAt: new Date().toISOString(), composers: composers, albums: albums, songs: songs }, null, 2);
   }
@@ -2115,7 +2168,10 @@ h1 { letter-spacing: .06em; }
     if (!seeking && isFinite(d) && d > 0) $('#pSeek').value = Math.round(audio.currentTime / d * 1000);
     $('#pTime').textContent = fmtTime(audio.currentTime) + ' / ' + fmtTime(d);
   });
-  audio.addEventListener('loadedmetadata', () => { $('#pTime').textContent = '0:00 / ' + fmtTime(audio.duration); });
+  audio.addEventListener('loadedmetadata', () => {
+    $('#pTime').textContent = '0:00 / ' + fmtTime(audio.duration);
+    if (cur.id) backfillDuration(cur.id, audio.duration);
+  });
   const seek = $('#pSeek');
   seek.addEventListener('pointerdown', () => { seeking = true; });
   seek.addEventListener('pointerup', () => { seeking = false; });
