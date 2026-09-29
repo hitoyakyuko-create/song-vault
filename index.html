@@ -9,7 +9,7 @@
 <title>楽曲保管庫</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700;900&family=Noto+Serif+JP:wght@400;500;600;700;900&display=swap" rel="stylesheet">
 <style>
 :root {
   --bg: #EDEFF7;
@@ -336,6 +336,99 @@ textarea.field-ctl { padding: 10px 14px; min-height: 92px; resize: vertical; lin
 .cover.img { object-fit: cover; background: var(--chip); }
 .filebox + .filebox { margin-top: 8px; }
 </style>
+<style>
+/* ============================================================
+   テーマ：夜想のライブラリ（ネイビー×ブロンズ）
+   楽譜と弦楽器を収める書斎をイメージした、重厚な金属パネルの意匠
+   ============================================================ */
+:root,
+:root[data-theme="light"],
+:root[data-theme="dark"] {
+  --bg: #0B0E1B;
+  --bg-deep: #05060D;
+  --surface: #3A2C18;
+  --surface-hi: #6B4F28;
+  --surface-lo: #241A0E;
+  --ink: #F1E4C6;
+  --muted: #C3A97A;
+  --line: rgba(201, 164, 90, .35);
+  --accent: #C9A24A;
+  --accent-ink: #241505;
+  --star: #E8C873;
+  --danger: #E2725B;
+  --chip: #4A381F;
+  --hover: #493A22;
+  --flash: rgba(201, 164, 90, .22);
+  --tag-ink: #F1E4C6;
+  --scrim: rgba(4, 5, 10, .68);
+  --font: "Noto Serif JP", "Hiragino Mincho ProN", "Yu Mincho", "Noto Sans JP", serif;
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0B0E1B; --bg-deep: #05060D;
+    --surface: #3A2C18; --surface-hi: #6B4F28; --surface-lo: #241A0E;
+    --ink: #F1E4C6; --muted: #C3A97A; --line: rgba(201, 164, 90, .35);
+    --accent: #C9A24A; --accent-ink: #241505; --star: #E8C873; --danger: #E2725B;
+    --chip: #4A381F; --hover: #493A22; --flash: rgba(201, 164, 90, .22);
+    --tag-ink: #F1E4C6; --scrim: rgba(4, 5, 10, .68); color-scheme: dark;
+  }
+}
+
+body {
+  background:
+    radial-gradient(ellipse 900px 500px at 50% 0%, rgba(107, 79, 40, .14), transparent 60%),
+    linear-gradient(180deg, var(--bg) 0%, var(--bg-deep) 100%);
+  min-height: 100vh;
+  letter-spacing: .01em;
+}
+h1 { letter-spacing: .06em; }
+.help {
+  border: 1px solid rgba(232, 200, 115, .55);
+  background: linear-gradient(180deg, rgba(58, 44, 24, .55), rgba(15, 11, 6, .55));
+  color: var(--ink);
+}
+.count { color: rgba(241, 228, 198, .92); }
+
+/* 金属パネル：カード・リスト・入力欄・シートなど、面のあるもの全般 */
+.list, .field-ctl, .chip, .btn, .sheet, .bkSheet, .player-inner, .bubble, .note-box, .pick, .tag {
+  background-image: linear-gradient(180deg, var(--surface-hi) 0%, var(--surface) 45%, var(--surface-lo) 100%);
+  border: 1px solid var(--line);
+  box-shadow: inset 0 1px 0 rgba(255, 235, 190, .12), inset 0 -1px 0 rgba(0, 0, 0, .35), 0 6px 16px rgba(0, 0, 0, .35);
+}
+.field-ctl { background-image: linear-gradient(180deg, var(--surface-lo) 0%, var(--surface) 100%); }
+.field-ctl::placeholder { color: rgba(195, 169, 122, .75); }
+.row { border-bottom: 1px solid var(--line); }
+@media (hover: hover) { .row:hover { background: linear-gradient(180deg, rgba(107, 79, 40, .35), rgba(36, 26, 14, .1)); } }
+.chip[aria-pressed="true"], .pick[aria-pressed="true"] {
+  background-image: linear-gradient(180deg, var(--star), var(--accent));
+  color: var(--accent-ink); border-color: var(--star);
+}
+.btn.primary, .fab {
+  background-image: linear-gradient(180deg, var(--star) 0%, var(--accent) 100%);
+  color: var(--accent-ink); border-color: var(--star);
+  text-shadow: 0 1px 0 rgba(255, 255, 255, .25);
+}
+.btn.danger { color: var(--danger); border-color: var(--danger); }
+.tag { border: 1px solid var(--line); }
+.cover { box-shadow: inset 0 0 0 1.5px rgba(232, 200, 115, .55); }
+.icon-btn.on { color: var(--star); }
+.icon-btn.play.on { color: var(--star); }
+
+/* 見出し・案内キャラクターまわりの飾り罫 */
+.sheet h2, .bubble h2 { font-weight: 700; letter-spacing: .04em; }
+.guide-pic { box-shadow: inset 0 0 0 2px rgba(232, 200, 115, .45), 0 8px 20px rgba(0, 0, 0, .45); }
+
+/* 下部ボタン列の上に、控えめな金の飾り罫 */
+.fab-wrap::before {
+  content: "";
+  position: absolute; left: 50%; top: -14px; transform: translateX(-50%);
+  width: 120px; height: 10px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 10'%3E%3Cpath d='M0 5 H45 M75 5 H120' stroke='%23C9A24A' stroke-width='1' opacity='0.55'/%3E%3Ccircle cx='60' cy='5' r='3.5' fill='none' stroke='%23E8C873' stroke-width='1'/%3E%3Ccircle cx='60' cy='5' r='1' fill='%23E8C873'/%3E%3C/svg%3E") center / contain no-repeat;
+  pointer-events: none;
+}
+.fab-wrap { position: fixed; }
+</style>
 </head>
 <body>
 <div class="backdrop" aria-hidden="true"></div>
@@ -402,6 +495,15 @@ textarea.field-ctl { padding: 10px 14px; min-height: 92px; resize: vertical; lin
     <div id="fldsComposer">
       <label class="fld"><span>作曲者名</span><input id="cName" class="field-ctl" type="text" maxlength="120" autocomplete="off"></label>
       <label class="fld"><span>説明文</span><textarea id="cNote" class="field-ctl" maxlength="2000"></textarea></label>
+      <div class="fld" id="cCoverFld">
+        <span id="cCoverLbl">画像</span>
+        <div class="filebox">
+          <button id="cCoverBtn" class="btn" type="button" aria-describedby="cCoverLbl">画像を選ぶ</button>
+          <span class="filename" id="cCoverName">未選択</span>
+          <button id="cCoverClear" class="link" type="button" hidden>外す</button>
+        </div>
+        <input id="cCoverFile" type="file" accept="image/*" hidden>
+      </div>
     </div>
 
     <div id="fldsAlbum">
@@ -703,7 +805,10 @@ textarea.field-ctl { padding: 10px 14px; min-height: 92px; resize: vertical; lin
   /* ---------- data: 作曲者 / アルバム / 曲 ---------- */
   function cleanComposer(id, d) {
     d = d || {};
-    return { id: id, name: str(d.name, 120), note: str(d.note, 2000), createdAt: num(d.createdAt), sortOrder: ord(d.sortOrder) };
+    return {
+      id: id, name: str(d.name, 120), note: str(d.note, 2000), createdAt: num(d.createdAt), sortOrder: ord(d.sortOrder),
+      coverName: d.coverName || null, coverType: d.coverType || null, coverSize: Number.isFinite(d.coverSize) ? d.coverSize : null
+    };
   }
   function cleanAlbum(id, d) {
     d = d || {};
@@ -724,9 +829,14 @@ textarea.field-ctl { padding: 10px 14px; min-height: 92px; resize: vertical; lin
       lyricName: d.lyricName || null, lyricType: d.lyricType || null, lyricSize: Number.isFinite(d.lyricSize) ? d.lyricSize : null
     };
   }
-  function rowToComposer(row) { return cleanComposer(row.id, { name: row.name, note: row.note, createdAt: row.created_at, sortOrder: row.sort_order }); }
+  function rowToComposer(row) {
+    return cleanComposer(row.id, {
+      name: row.name, note: row.note, createdAt: row.created_at, sortOrder: row.sort_order,
+      coverName: row.cover_name, coverType: row.cover_type, coverSize: row.cover_size
+    });
+  }
   function composerToRow(c) {
-    const r = { id: c.id, name: c.name, note: c.note, created_at: c.createdAt };
+    const r = { id: c.id, name: c.name, note: c.note, created_at: c.createdAt, cover_name: c.coverName, cover_type: c.coverType, cover_size: c.coverSize };
     if (c.sortOrder != null) r.sort_order = c.sortOrder;
     return r;
   }
@@ -911,6 +1021,7 @@ textarea.field-ctl { padding: 10px 14px; min-height: 92px; resize: vertical; lin
   async function removeComposer(id) {
     const albums = state.albums.filter((a) => a.composerId === id);
     for (const a of albums) await removeAlbum(a.id);
+    await imgDrop('ccover', id);
     if (state.backend === 'db') {
       const { error } = await state.sb.from('composers').delete().eq('id', id);
       if (error) throw sbErr(error);
@@ -1048,8 +1159,9 @@ textarea.field-ctl { padding: 10px 14px; min-height: 92px; resize: vertical; lin
 
   /* ---------- 行の描画 ---------- */
   function renderComposerRow(c) {
+    const hasCover = hasImage('ccover', c.id, c.coverName);
     const main = h('button', { class: 'row-main', type: 'button', onclick: () => goAlbums(c.id) },
-      coverArt(c.name),
+      coverThumb('ccover', c.id, hasCover, c.name),
       h('span', { class: 'meta' },
         h('span', { class: 'name' }, c.name || '（無題の作曲者）'),
         c.note ? h('span', { class: 'artist' }, c.note) : null));
@@ -1234,6 +1346,7 @@ textarea.field-ctl { padding: 10px 14px; min-height: 92px; resize: vertical; lin
   let lastFocus = null, delArmed = false, delTimer = null;
   let sheetFile = { pending: null, remove: false };
   let sheetImg = {
+    cCover: { pending: null, remove: false },
     alCover: { pending: null, remove: false }, alLyric: { pending: null, remove: false },
     sgCover: { pending: null, remove: false }, sgLyric: { pending: null, remove: false }
   };
@@ -1263,6 +1376,8 @@ textarea.field-ctl { padding: 10px 14px; min-height: 92px; resize: vertical; lin
     $('#save').textContent = c ? '保存' : '追加';
     $('#cName').value = c ? c.name : '';
     $('#cNote').value = c ? c.note : '';
+    sheetImg.cCover = { pending: null, remove: false };
+    renderImgField('c', 'Cover', 'ccover', c ? c.id : null, c ? c.coverName : null, c ? c.coverSize : null);
     setErr(''); setSaving(false); resetDel();
     $('#del').hidden = !c;
     openOverlay('#cName');
@@ -1364,7 +1479,11 @@ textarea.field-ctl { padding: 10px 14px; min-height: 92px; resize: vertical; lin
     if (type === 'composer') {
       const c = saveComposer(); if (!c) return;
       setErr(''); setSaving(true);
-      try { await persistComposer(c); closeSheet(); toast(state.editing.id ? '保存しました' : '追加しました'); flashRow(c.id); }
+      try {
+        await applyImgField(c, 'c', 'Cover', 'ccover');
+        await persistComposer(c);
+        closeSheet(); toast(state.editing.id ? '保存しました' : '追加しました'); flashRow(c.id);
+      }
       catch (e) { setErr(errMsg(e)); setSaving(false); }
       return;
     }
@@ -1411,13 +1530,13 @@ textarea.field-ctl { padding: 10px 14px; min-height: 92px; resize: vertical; lin
     if (f.pending) {
       const meta = await imgPutRec(kind, item.id, f.pending);
       if (state.backend === 'db') {
-        if (kind === 'acover' || kind === 'scover') { item.coverName = meta.name; item.coverType = meta.type; item.coverSize = meta.size; }
+        if (kind === 'acover' || kind === 'scover' || kind === 'ccover') { item.coverName = meta.name; item.coverType = meta.type; item.coverSize = meta.size; }
         else { item.lyricName = meta.name; item.lyricType = meta.type; item.lyricSize = meta.size; }
       }
     } else if (f.remove) {
       await imgDrop(kind, item.id);
       if (state.backend === 'db') {
-        if (kind === 'acover' || kind === 'scover') { item.coverName = null; item.coverType = null; item.coverSize = null; }
+        if (kind === 'acover' || kind === 'scover' || kind === 'ccover') { item.coverName = null; item.coverType = null; item.coverSize = null; }
         else { item.lyricName = null; item.lyricType = null; item.lyricSize = null; }
       }
     }
@@ -1638,7 +1757,8 @@ textarea.field-ctl { padding: 10px 14px; min-height: 92px; resize: vertical; lin
     return '';
   }
   function imgKindOf(prefix, cap) {
-    return (prefix === 'al' ? 'a' : 's') + (cap === 'Cover' ? 'cover' : 'lyric');
+    const p = prefix === 'al' ? 'a' : (prefix === 'c' ? 'c' : 's');
+    return p + (cap === 'Cover' ? 'cover' : 'lyric');
   }
   function wireImgField(prefix, cap) {
     const ids = imgFieldIds(prefix, cap);
@@ -1653,14 +1773,15 @@ textarea.field-ctl { padding: 10px 14px; min-height: 92px; resize: vertical; lin
       setErr('');
       sheetImg[prefix + cap].pending = f; sheetImg[prefix + cap].remove = false;
       const curId = state.editing.id;
-      const cur3 = prefix === 'al' ? state.albums.find((x) => x.id === curId) : state.songs.find((x) => x.id === curId);
+      const listFor = prefix === 'al' ? state.albums : (prefix === 'c' ? state.composers : state.songs);
+      const cur3 = listFor.find((x) => x.id === curId);
       renderImgField(prefix, cap, kind, curId, cur3 ? (cap === 'Cover' ? cur3.coverName : cur3.lyricName) : null, cur3 ? (cap === 'Cover' ? cur3.coverSize : cur3.lyricSize) : null);
     });
     $(ids.clear).addEventListener('click', () => {
       const curId = state.editing.id;
-      const had = !!(curId && hasImage(kind, curId, prefix === 'al'
-        ? (cap === 'Cover' ? (state.albums.find((x) => x.id === curId) || {}).coverName : (state.albums.find((x) => x.id === curId) || {}).lyricName)
-        : (cap === 'Cover' ? (state.songs.find((x) => x.id === curId) || {}).coverName : (state.songs.find((x) => x.id === curId) || {}).lyricName)));
+      const listFor = prefix === 'al' ? state.albums : (prefix === 'c' ? state.composers : state.songs);
+      const cur3 = listFor.find((x) => x.id === curId) || {};
+      const had = !!(curId && hasImage(kind, curId, cap === 'Cover' ? cur3.coverName : cur3.lyricName));
       sheetImg[prefix + cap].pending = null; sheetImg[prefix + cap].remove = had;
       renderImgField(prefix, cap, kind, curId, null, null);
     });
@@ -1967,6 +2088,7 @@ textarea.field-ctl { padding: 10px 14px; min-height: 92px; resize: vertical; lin
     sheetFile.pending = null; sheetFile.remove = had;
     renderFileField();
   });
+  wireImgField('c', 'Cover');
   wireImgField('al', 'Cover'); wireImgField('al', 'Lyric');
   wireImgField('sg', 'Cover'); wireImgField('sg', 'Lyric');
   $('#pPlay').addEventListener('click', () => { if (audio.paused) audio.play().catch(() => {}); else audio.pause(); });
