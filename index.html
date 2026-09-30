@@ -464,19 +464,21 @@ h1 { letter-spacing: .06em; }
 .sub { margin: -6px 0 12px; font-size: clamp(.68rem, 3.3vw, .85rem); line-height: 1.4; letter-spacing: .02em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: rgba(241, 228, 198, .92); text-shadow: 0 1px 8px rgba(0, 0, 0, .6); }
 .sub[hidden] { display: none; }
 
-/* アルバム・曲の行：名前は上段で端から端まで、ボタンは下段に分ける（余白は控えめ） */
-.row.stack { flex-direction: column; align-items: stretch; }
+/* アルバム・曲の行：ジャケットの右に名前（2行まで・超えたら省略）、その下にボタン */
+.row.stack { display: grid; grid-template-columns: auto minmax(0, 1fr); grid-template-rows: auto auto; align-items: center; }
+.row.stack .row-pic { grid-column: 1; grid-row: 1 / span 2; align-self: center; padding: 6px 0 6px 12px; background: none; border: 0; cursor: pointer; display: block; }
+.row.stack .cover { width: 52px; height: 52px; border-radius: 9px; }
 .row.stack .row-title {
-  display: flex; align-items: baseline; gap: 8px; width: 100%;
-  padding: 7px 12px 0; background: none; border: 0; text-align: left; cursor: pointer;
+  grid-column: 2; grid-row: 1; display: flex; align-items: baseline; gap: 8px; min-width: 0;
+  padding: 7px 12px 0 10px; background: none; border: 0; text-align: left; cursor: pointer;
 }
-.row.stack .row-title .name { flex: 1; min-width: 0; font-size: .88rem; line-height: 1.35; }
+.row.stack .row-title .name { flex: 1; min-width: 0; font-size: .88rem; line-height: 1.35; -webkit-line-clamp: 2; }
 .row.stack .row-title .dur { font-size: .78rem; line-height: 1.35; }
-.row.stack .row-body { display: flex; align-items: center; }
-.row.stack .row-main { gap: 10px; padding: 3px 2px 7px 12px; }
-.row.stack .cover { width: 42px; height: 42px; border-radius: 8px; }
-.row.stack .tags { margin-top: 0; gap: 4px; }
-.row.stack .tag { font-size: .7rem; padding: 0 8px; }
+.row.stack .row-foot { grid-column: 2; grid-row: 2; display: flex; align-items: center; gap: 6px; min-width: 0; padding: 0 2px 3px 10px; }
+.row.stack .foot-l { flex: 1; min-width: 0; }
+.row.stack .foot-l .artist { display: block; font-size: .78rem; }
+.row.stack .tags { margin-top: 0; gap: 4px; flex-wrap: nowrap; overflow: hidden; }
+.row.stack .tag { font-size: .7rem; padding: 0 8px; white-space: nowrap; }
 .row.stack .actions { padding-right: 2px; }
 .row.stack .icon-btn { width: 38px; height: 38px; }
 </style>
@@ -1230,17 +1232,17 @@ h1 { letter-spacing: .06em; }
   function renderAlbumRow(a) {
     const hasCover = hasImage('acover', a.id, a.coverName), hasLyric = hasImage('alyric', a.id, a.lyricName);
     const open = () => goSongs(a.id);
+    const pic = h('button', { class: 'row-pic', type: 'button', 'aria-label': (a.name || 'アルバム') + 'を開く', onclick: open },
+      coverThumb('acover', a.id, hasCover, a.name));
     const title = h('button', { class: 'row-title', type: 'button', onclick: open },
       h('span', { class: 'name' }, a.name || '（無題のアルバム）'));
-    const main = h('button', { class: 'row-main', type: 'button', onclick: open },
-      coverThumb('acover', a.id, hasCover, a.name),
-      h('span', { class: 'meta' },
-        a.note ? h('span', { class: 'artist' }, a.note) : null));
     const lyric = hasLyric ? h('button', { class: 'icon-btn', type: 'button', 'aria-label': '歌詞カードを見る', onclick: (e) => { e.stopPropagation(); openImage('alyric', a.id, true); } }, iconImage()) : null;
     const edit = h('button', { class: 'icon-btn', type: 'button', 'aria-label': '編集', onclick: (e) => { e.stopPropagation(); openAlbumSheet(a.id); } }, iconEdit());
     const arrow = h('span', { class: 'icon-btn', 'aria-hidden': 'true' }, iconChevron());
-    return h('li', { class: 'row stack', 'data-id': a.id }, title,
-      h('div', { class: 'row-body' }, main, h('span', { class: 'actions' }, lyric, edit, arrow)));
+    return h('li', { class: 'row stack', 'data-id': a.id }, pic, title,
+      h('div', { class: 'row-foot' },
+        h('span', { class: 'foot-l' }, a.note ? h('span', { class: 'artist' }, a.note) : null),
+        h('span', { class: 'actions' }, lyric, edit, arrow)));
   }
   function renderSongRow(sg) {
     const star = h('button', {
@@ -1255,19 +1257,19 @@ h1 { letter-spacing: .06em; }
       'aria-label': 'リンクを開く', onclick: (e) => e.stopPropagation()
     }, iconLink()) : null;
     const openSong = () => openSongSheet(sg.id);
+    const pic = h('button', { class: 'row-pic', type: 'button', 'aria-label': (sg.title || '曲') + 'の詳細', onclick: openSong },
+      coverThumb('scover', sg.id, hasCover, sg.title));
     const title = h('button', { class: 'row-title', type: 'button', onclick: openSong },
       h('span', { class: 'name' }, sg.title || '（無題）'),
       (sg.duration && state.fileMeta.has(sg.id)) ? h('span', { class: 'dur' }, fmtTime(sg.duration)) : null);
-    const main = h('button', { class: 'row-main', type: 'button', onclick: openSong },
-      coverThumb('scover', sg.id, hasCover, sg.title),
-      h('span', { class: 'meta' },
-        sg.tags.length ? h('span', { class: 'tags' }, sg.tags.map((t) => h('span', { class: 'tag' }, t))) : null));
     const play = state.fileMeta.has(sg.id) ? h('button', {
       class: 'icon-btn play', type: 'button', 'data-id': sg.id, 'aria-label': '再生',
       onclick: (e) => { e.stopPropagation(); playSong(sg.id); }
     }, iconPlay()) : null;
-    return h('li', { class: 'row stack', 'data-id': sg.id }, title,
-      h('div', { class: 'row-body' }, main, h('span', { class: 'actions' }, play, lyric, open, star)));
+    return h('li', { class: 'row stack', 'data-id': sg.id }, pic, title,
+      h('div', { class: 'row-foot' },
+        h('span', { class: 'foot-l' }, sg.tags.length ? h('span', { class: 'tags' }, sg.tags.map((t) => h('span', { class: 'tag' }, t))) : null),
+        h('span', { class: 'actions' }, play, lyric, open, star)));
   }
   function renderRow(item) {
     if (state.nav.level === 'composers') return renderComposerRow(item);
