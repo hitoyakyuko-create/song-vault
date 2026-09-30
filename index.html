@@ -454,22 +454,31 @@ h1 { letter-spacing: .06em; }
   font-variant-numeric: tabular-nums; white-space: nowrap;
 }
 
-/* MUSIC VAULT 見出し */
-.ttl { min-width: 0; }
-.head-l .ttl h1 { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.sub { margin: 2px 0 0; font-size: .82rem; line-height: 1.4; letter-spacing: .04em; color: rgba(241, 228, 198, .92); text-shadow: 0 1px 8px rgba(0, 0, 0, .6); }
+/* MUSIC VAULT 見出し：1行に収める */
+.head { flex-wrap: nowrap; gap: 8px; }
+.head-l { flex: 1 1 auto; }
+.head-l h1 { font-size: clamp(1.15rem, 6.2vw, 1.9rem); letter-spacing: .03em; }
+.head-r { flex: none; gap: 8px; }
+.head .count { font-size: .78rem; }
+.head .help { min-height: 34px; padding: 0 12px; font-size: .78rem; white-space: nowrap; }
+.sub { margin: -6px 0 12px; font-size: clamp(.68rem, 3.3vw, .85rem); line-height: 1.4; letter-spacing: .02em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: rgba(241, 228, 198, .92); text-shadow: 0 1px 8px rgba(0, 0, 0, .6); }
 .sub[hidden] { display: none; }
 
-/* アルバム・曲の行：名前は上段で端から端まで、ボタンは下段に分ける */
+/* アルバム・曲の行：名前は上段で端から端まで、ボタンは下段に分ける（余白は控えめ） */
 .row.stack { flex-direction: column; align-items: stretch; }
 .row.stack .row-title {
-  display: flex; align-items: baseline; gap: 10px; width: 100%;
-  padding: 11px 14px 0; background: none; border: 0; text-align: left; cursor: pointer;
+  display: flex; align-items: baseline; gap: 8px; width: 100%;
+  padding: 7px 12px 0; background: none; border: 0; text-align: left; cursor: pointer;
 }
-.row.stack .row-title .name { flex: 1; min-width: 0; font-size: .9rem; line-height: 1.45; }
-.row.stack .row-title .dur { line-height: 1.45; }
+.row.stack .row-title .name { flex: 1; min-width: 0; font-size: .88rem; line-height: 1.35; }
+.row.stack .row-title .dur { font-size: .78rem; line-height: 1.35; }
 .row.stack .row-body { display: flex; align-items: center; }
-.row.stack .row-main { padding: 8px 4px 12px 14px; }
+.row.stack .row-main { gap: 10px; padding: 3px 2px 7px 12px; }
+.row.stack .cover { width: 42px; height: 42px; border-radius: 8px; }
+.row.stack .tags { margin-top: 0; gap: 4px; }
+.row.stack .tag { font-size: .7rem; padding: 0 8px; }
+.row.stack .actions { padding-right: 2px; }
+.row.stack .icon-btn { width: 38px; height: 38px; }
 </style>
 </head>
 <body>
@@ -478,13 +487,14 @@ h1 { letter-spacing: .06em; }
   <header class="head">
     <div class="head-l">
       <button id="back" class="help" type="button" hidden aria-label="戻る">← 戻る</button>
-      <div class="ttl"><h1 id="h1">MUSIC VAULT</h1><p class="sub" id="sub">Your personal collection of music.</p></div>
+      <h1 id="h1">MUSIC VAULT</h1>
     </div>
     <div class="head-r">
       <p class="count" id="count" aria-live="polite"></p>
       <button id="help" class="help" type="button">使い方</button>
     </div>
   </header>
+  <p class="sub" id="sub">Your personal collection of music.</p>
   <p class="note-box" id="noteBox" hidden></p>
   <div class="bar" id="bar">
     <div class="tools">
