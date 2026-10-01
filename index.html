@@ -1945,6 +1945,7 @@ h1 { letter-spacing: .06em; }
     cur = { id: id, url: url, revoke: !!revoke };
     audio.src = url;
     applyVolume();
+    if (!webAudio.needed) volNote('音量方式：標準');
     const sg = state.songs.find((x) => x.id === id);
     $('#pTitle').textContent = sg ? sg.title : '';
     $('#pSeek').value = 0; $('#pTime').textContent = '0:00 / 0:00';
@@ -2057,7 +2058,8 @@ h1 { letter-spacing: .06em; }
   /* iPhone など audio.volume が効かない環境では Web Audio の音量を使う */
   const webAudio = { needed: false, ctx: null, gain: null, ready: false, failed: false };
   (function probeVolume() {
-    try { const old = audio.volume; audio.volume = 0.5; webAudio.needed = audio.volume !== 0.5; audio.volume = old; }
+    const ios = /iP(hone|ad|od)/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    try { const old = audio.volume; audio.volume = 0.5; webAudio.needed = ios || audio.volume !== 0.5; audio.volume = old; }
     catch (e) { webAudio.needed = true; }
   })();
   function unlockAudio() {
@@ -2096,7 +2098,7 @@ h1 { letter-spacing: .06em; }
       webAudio.gain = webAudio.ctx.createGain();
       src.connect(webAudio.gain); webAudio.gain.connect(webAudio.ctx.destination);
       webAudio.ready = true;
-      volNote('');
+      volNote('音量方式：アプリ内（Web Audio）');
       applyVolume();
     } catch (e) {
       webAudio.failed = true;
