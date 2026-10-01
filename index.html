@@ -204,6 +204,7 @@ body.reordering { -webkit-user-select: none; user-select: none; cursor: grabbing
 .seek { flex: 1; min-width: 0; height: 28px; margin: 0; accent-color: var(--accent); touch-action: manipulation; }
 .p-ctl { display: flex; align-items: center; gap: 6px; margin-top: 2px; }
 .player .icon-btn.sm { width: 36px; height: 36px; }
+.p-note { margin-top: 2px; font-size: .72rem; line-height: 1.4; color: var(--muted); }
 .p-vol { display: flex; align-items: center; gap: 6px; }
 .p-vol .p-time { min-width: 2.2em; text-align: right; }
 .mode-btn { margin-left: auto; display: inline-flex; align-items: center; gap: 6px; min-height: 34px; padding: 0 12px; border-radius: 999px; border: 1px solid var(--line); background: transparent; color: var(--muted); font-size: .78rem; white-space: nowrap; cursor: pointer; }
@@ -552,6 +553,7 @@ h1 { letter-spacing: .06em; }
         <input id="pVol" class="seek" type="range" min="0" max="100" step="1" value="100" aria-label="音量">
         <span class="p-time" id="pVolNum">100</span>
       </div>
+      <div class="p-note" id="pVolNote" hidden></div>
     </div>
     <button id="pClose" class="icon-btn" type="button" aria-label="プレーヤーを閉じる"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
   </div>
@@ -2067,22 +2069,39 @@ h1 { letter-spacing: .06em; }
       if (webAudio.ctx.state === 'suspended') webAudio.ctx.resume().catch(() => {});
     } catch (e) { webAudio.failed = true; }
   }
+  function volNote(msg) {
+    const n = $('#pVolNote');
+    n.textContent = msg || ''; n.hidden = !msg;
+  }
   /* 曲の読み込み前に呼ぶ。外部URLは CORS が通る場合だけ Web Audio につなぐ */
   async function prepareVolume(url, isBlob) {
     if (!webAudio.needed || webAudio.failed || webAudio.ready) return;
+    let step = 'ctx';
     try {
-      if (!webAudio.ctx) { unlockAudio(); if (!webAudio.ctx) return; }
+      if (!webAudio.ctx) { unlockAudio(); if (!webAudio.ctx) throw new Error('AudioContext なし'); }
       if (!isBlob) {
-        const r = await fetch(url, { method: 'HEAD', mode: 'cors' });
-        if (!r.ok) throw new Error('cors');
+        step = 'cors';
+        let ok = false;
+        try { const r = await fetch(url, { method: 'HEAD', mode: 'cors' }); ok = r.ok; } catch (e1) { ok = false; }
+        if (!ok) {
+          const ac = new AbortController();
+          const r2 = await fetch(url, { mode: 'cors', signal: ac.signal });
+          ac.abort();
+          if (!r2.ok) throw new Error('HTTP ' + r2.status);
+        }
         audio.crossOrigin = 'anonymous';
       }
+      step = 'node';
       const src = webAudio.ctx.createMediaElementSource(audio);
       webAudio.gain = webAudio.ctx.createGain();
       src.connect(webAudio.gain); webAudio.gain.connect(webAudio.ctx.destination);
       webAudio.ready = true;
+      volNote('');
       applyVolume();
-    } catch (e) { webAudio.failed = true; }
+    } catch (e) {
+      webAudio.failed = true;
+      volNote('この端末ではアプリ内の音量を変えられません（本体の音量ボタンをお使いください）[' + step + ': ' + ((e && e.message) || e) + ']');
+    }
   }
   function iconSpeaker(level) {
     const s = svgEl('svg', { viewBox: '0 0 24 24', width: 20, height: 20, 'aria-hidden': 'true', fill: 'none', stroke: 'currentColor', 'stroke-width': '2', 'stroke-linecap': 'round', 'stroke-linejoin': 'round' });
@@ -2360,7 +2379,7 @@ h1 { letter-spacing: .06em; }
   wireImgField('sg', 'Cover'); wireImgField('sg', 'Lyric');
   $('#pPlay').addEventListener('click', () => { if (audio.paused) audio.play().catch(() => {}); else audio.pause(); });
   $('#pClose').addEventListener('click', closePlayer);
-  audio.addEventListener('play', syncPlay);
+  audio.addEventListener('play', () => { if (webAudio.ctx && webAudio.ctx.state === 'suspended') webAudio.ctx.resume().catch(() => {}); syncPlay(); });
   audio.addEventListener('pause', syncPlay);
   audio.addEventListener('ended', onEnded);
   $('#pPrev').append(iconStep(-1)); $('#pNext').append(iconStep(1));
