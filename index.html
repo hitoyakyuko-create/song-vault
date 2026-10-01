@@ -205,6 +205,7 @@ body.reordering { -webkit-user-select: none; user-select: none; cursor: grabbing
 .p-ctl { display: flex; align-items: center; gap: 6px; margin-top: 2px; }
 .player .icon-btn.sm { width: 36px; height: 36px; }
 .p-note { margin-top: 2px; font-size: .72rem; line-height: 1.4; color: var(--muted); }
+.note-sw { margin-left: 6px; padding: 2px 10px; border-radius: 999px; border: 1px solid var(--line); background: transparent; color: var(--accent); font-size: .72rem; cursor: pointer; white-space: nowrap; }
 .p-vol { display: flex; align-items: center; gap: 6px; }
 .p-vol .p-time { min-width: 2.2em; text-align: right; }
 .mode-btn { margin-left: auto; display: inline-flex; align-items: center; gap: 6px; min-height: 34px; padding: 0 12px; border-radius: 999px; border: 1px solid var(--line); background: transparent; color: var(--muted); font-size: .78rem; white-space: nowrap; cursor: pointer; }
@@ -553,7 +554,7 @@ h1 { letter-spacing: .06em; }
         <input id="pVol" class="seek" type="range" min="0" max="100" step="1" value="100" aria-label="音量">
         <span class="p-time" id="pVolNum">100</span>
       </div>
-      <div class="p-note" id="pVolNote" hidden></div>
+      <div class="p-note" id="pVolNote" hidden><span id="pVolTxt"></span> <button id="pVolSw" class="note-sw" type="button" hidden></button></div>
     </div>
     <button id="pClose" class="icon-btn" type="button" aria-label="プレーヤーを閉じる"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
   </div>
@@ -1945,7 +1946,7 @@ h1 { letter-spacing: .06em; }
     cur = { id: id, url: url, revoke: !!revoke };
     audio.src = url;
     applyVolume();
-    if (!webAudio.needed) volNote('音量方式：標準');
+    if (!webAudio.needed) volNote(webAudio.ios && !webAudio.pref ? '背景再生を優先中（音量は本体のボタンで調整）' : '音量方式：標準');
     const sg = state.songs.find((x) => x.id === id);
     $('#pTitle').textContent = sg ? sg.title : '';
     $('#pSeek').value = 0; $('#pTime').textContent = '0:00 / 0:00';
@@ -2056,24 +2057,32 @@ h1 { letter-spacing: .06em; }
     muted = localStorage.getItem(VOL_KEY + '-muted') === '1';
   } catch (e) { /* 無視 */ }
   /* iPhone など audio.volume が効かない環境では Web Audio の音量を使う */
-  const webAudio = { needed: false, ctx: null, gain: null, ready: false, failed: false };
+  const webAudio = { ios: false, pref: true, needed: false, ctx: null, gain: null, ready: false, failed: false };
   (function probeVolume() {
     const ios = /iP(hone|ad|od)/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-    try { const old = audio.volume; audio.volume = 0.5; webAudio.needed = ios || audio.volume !== 0.5; audio.volume = old; }
-    catch (e) { webAudio.needed = true; }
+    webAudio.ios = ios;
+    try { webAudio.pref = localStorage.getItem(VOL_KEY + '-webaudio') !== '0'; } catch (e) { webAudio.pref = true; }
+    try { const old = audio.volume; audio.volume = 0.5; webAudio.needed = (ios || audio.volume !== 0.5) && webAudio.pref; audio.volume = old; }
+    catch (e) { webAudio.needed = webAudio.pref; }
   })();
   function unlockAudio() {
     if (!webAudio.needed || webAudio.failed) return;
     try {
       const AC = window.AudioContext || window.webkitAudioContext;
       if (!AC) { webAudio.failed = true; return; }
-      if (!webAudio.ctx) webAudio.ctx = new AC();
+      if (!webAudio.ctx) {
+        webAudio.ctx = new AC();
+        webAudio.ctx.onstatechange = () => { if (webAudio.ctx.state !== 'running' && !audio.paused) webAudio.ctx.resume().catch(() => {}); };
+      }
       if (webAudio.ctx.state === 'suspended') webAudio.ctx.resume().catch(() => {});
     } catch (e) { webAudio.failed = true; }
   }
   function volNote(msg) {
     const n = $('#pVolNote');
-    n.textContent = msg || ''; n.hidden = !msg;
+    $('#pVolTxt').textContent = msg || ''; n.hidden = !msg;
+    const sw = $('#pVolSw');
+    sw.hidden = !webAudio.ios;
+    sw.textContent = webAudio.pref ? '背景再生を優先' : 'アプリ内音量に戻す';
   }
   /* 曲の読み込み前に呼ぶ。外部URLは CORS が通る場合だけ Web Audio につなぐ */
   async function prepareVolume(url, isBlob) {
@@ -2398,6 +2407,18 @@ h1 { letter-spacing: .06em; }
     volume = Math.max(0, Math.min(1, e.target.value / 100));
     if (volume > 0) muted = false;
     unlockAudio(); applyVolume(); saveVolume();
+  });
+  $('#pVolSw').addEventListener('click', () => {
+    const toBg = webAudio.pref;
+    const msg = toBg
+      ? '背景再生を優先します（音量は本体のボタンで調整）。切り替えのため再読み込みします。よろしいですか？'
+      : 'アプリ内の音量調節に戻します（背景再生が止まることがあります）。再読み込みします。よろしいですか？';
+    if (!confirm(msg)) return;
+    try { localStorage.setItem(VOL_KEY + '-webaudio', toBg ? '0' : '1'); } catch (e) { /* 無視 */ }
+    location.reload();
+  });
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden && webAudio.ctx && webAudio.ctx.state !== 'running' && !audio.paused) webAudio.ctx.resume().catch(() => {});
   });
   $('#pMute').addEventListener('click', () => {
     if (volume === 0) { volume = 0.5; muted = false; } else muted = !muted;
