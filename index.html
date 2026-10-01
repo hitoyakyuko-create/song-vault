@@ -204,12 +204,14 @@ body.reordering { -webkit-user-select: none; user-select: none; cursor: grabbing
 .seek { flex: 1; min-width: 0; height: 28px; margin: 0; accent-color: var(--accent); touch-action: manipulation; }
 .p-ctl { display: flex; align-items: center; gap: 6px; margin-top: 2px; }
 .player .icon-btn.sm { width: 36px; height: 36px; }
+.p-vol { display: flex; align-items: center; gap: 6px; }
+.p-vol .p-time { min-width: 2.2em; text-align: right; }
 .mode-btn { margin-left: auto; display: inline-flex; align-items: center; gap: 6px; min-height: 34px; padding: 0 12px; border-radius: 999px; border: 1px solid var(--line); background: transparent; color: var(--muted); font-size: .78rem; white-space: nowrap; cursor: pointer; }
 .player .icon-btn:disabled { opacity: .35; cursor: default; }
 .mode-btn.on { color: var(--accent); border-color: var(--accent); }
 .p-time { flex: none; color: var(--muted); font-size: .78rem; font-variant-numeric: tabular-nums; }
-body.has-player .app { padding-bottom: 270px; }
-body.has-player .toast { bottom: calc(208px + env(safe-area-inset-bottom, 0px)); }
+body.has-player .app { padding-bottom: 306px; }
+body.has-player .toast { bottom: calc(244px + env(safe-area-inset-bottom, 0px)); }
 .foot { margin: 14px 4px 0; color: var(--muted); font-size: .85rem; word-break: auto-phrase; }
 .link {
   background: none; border: 0; padding: 0 2px; min-height: 32px; color: var(--accent); font-weight: 700;
@@ -544,6 +546,11 @@ h1 { letter-spacing: .06em; }
         <button id="pPrev" class="icon-btn sm" type="button" aria-label="前の曲"></button>
         <button id="pNext" class="icon-btn sm" type="button" aria-label="次の曲"></button>
         <button id="pMode" class="mode-btn" type="button"></button>
+      </div>
+      <div class="p-vol">
+        <button id="pMute" class="icon-btn sm" type="button" aria-label="ミュート"></button>
+        <input id="pVol" class="seek" type="range" min="0" max="100" step="1" value="100" aria-label="音量">
+        <span class="p-time" id="pVolNum">100</span>
       </div>
     </div>
     <button id="pClose" class="icon-btn" type="button" aria-label="プレーヤーを閉じる"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
@@ -1935,6 +1942,7 @@ h1 { letter-spacing: .06em; }
     if (cur.url && cur.revoke) URL.revokeObjectURL(cur.url);
     cur = { id: id, url: url, revoke: !!revoke };
     audio.src = url;
+    applyVolume();
     const sg = state.songs.find((x) => x.id === id);
     $('#pTitle').textContent = sg ? sg.title : '';
     $('#pSeek').value = 0; $('#pTime').textContent = '0:00 / 0:00';
@@ -1992,16 +2000,20 @@ h1 { letter-spacing: .06em; }
       if (!state.fileMeta.has(id)) { if (!quiet) toast('この曲にはファイルがありません。'); return false; }
       const { data } = state.sb.storage.from(FILE_BUCKET).getPublicUrl(id);
       if (!data || !data.publicUrl) { if (!quiet) toast('曲ファイルを読み込めませんでした。'); return false; }
+      await prepareVolume(data.publicUrl, false);
       await startPlayback(id, data.publicUrl, false);
       return true;
     }
     let rec;
     try { rec = await fileGet(id); } catch (e) { if (!quiet) toast('曲ファイルを読み込めませんでした。'); return false; }
     if (!rec || !rec.blob) { if (!quiet) toast('このブラウザには曲ファイルがありません。'); return false; }
-    await startPlayback(id, URL.createObjectURL(rec.blob), true);
+    const blobUrl = URL.createObjectURL(rec.blob);
+    await prepareVolume(blobUrl, true);
+    await startPlayback(id, blobUrl, true);
     return true;
   }
   async function playSong(id) {
+    unlockAudio();
     if (cur.id === id) { if (audio.paused) audio.play().catch(() => {}); else audio.pause(); return; }
     buildQueue();
     if (queue.indexOf(id) < 0) queue.push(id);
@@ -2031,6 +2043,70 @@ h1 { letter-spacing: .06em; }
       if (await step(1, true)) return;
     }
     audio.currentTime = 0; syncPlay();
+  }
+  /* ---- 音量 ---- */
+  const VOL_KEY = 'song-vault-volume';
+  let volume = 1, muted = false;
+  try {
+    const v = parseFloat(localStorage.getItem(VOL_KEY));
+    if (isFinite(v) && v >= 0 && v <= 1) volume = v;
+    muted = localStorage.getItem(VOL_KEY + '-muted') === '1';
+  } catch (e) { /* 無視 */ }
+  /* iPhone など audio.volume が効かない環境では Web Audio の音量を使う */
+  const webAudio = { needed: false, ctx: null, gain: null, ready: false, failed: false };
+  (function probeVolume() {
+    try { const old = audio.volume; audio.volume = 0.5; webAudio.needed = audio.volume !== 0.5; audio.volume = old; }
+    catch (e) { webAudio.needed = true; }
+  })();
+  function unlockAudio() {
+    if (!webAudio.needed || webAudio.failed) return;
+    try {
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) { webAudio.failed = true; return; }
+      if (!webAudio.ctx) webAudio.ctx = new AC();
+      if (webAudio.ctx.state === 'suspended') webAudio.ctx.resume().catch(() => {});
+    } catch (e) { webAudio.failed = true; }
+  }
+  /* 曲の読み込み前に呼ぶ。外部URLは CORS が通る場合だけ Web Audio につなぐ */
+  async function prepareVolume(url, isBlob) {
+    if (!webAudio.needed || webAudio.failed || webAudio.ready) return;
+    try {
+      if (!webAudio.ctx) { unlockAudio(); if (!webAudio.ctx) return; }
+      if (!isBlob) {
+        const r = await fetch(url, { method: 'HEAD', mode: 'cors' });
+        if (!r.ok) throw new Error('cors');
+        audio.crossOrigin = 'anonymous';
+      }
+      const src = webAudio.ctx.createMediaElementSource(audio);
+      webAudio.gain = webAudio.ctx.createGain();
+      src.connect(webAudio.gain); webAudio.gain.connect(webAudio.ctx.destination);
+      webAudio.ready = true;
+      applyVolume();
+    } catch (e) { webAudio.failed = true; }
+  }
+  function iconSpeaker(level) {
+    const s = svgEl('svg', { viewBox: '0 0 24 24', width: 20, height: 20, 'aria-hidden': 'true', fill: 'none', stroke: 'currentColor', 'stroke-width': '2', 'stroke-linecap': 'round', 'stroke-linejoin': 'round' });
+    s.append(svgEl('path', { d: 'M4 9.5v5h3.5L12 18.5v-13L7.5 9.5z', fill: 'currentColor' }));
+    if (level === 0) s.append(svgEl('path', { d: 'M16 9.5l5 5' }), svgEl('path', { d: 'M21 9.5l-5 5' }));
+    else {
+      s.append(svgEl('path', { d: 'M15.5 9.2a4 4 0 0 1 0 5.6' }));
+      if (level > 1) s.append(svgEl('path', { d: 'M18 6.8a7.5 7.5 0 0 1 0 10.4' }));
+    }
+    return s;
+  }
+  function applyVolume() {
+    const v = muted ? 0 : volume;
+    if (webAudio.ready && webAudio.gain) webAudio.gain.gain.value = v;
+    else { try { audio.volume = v; } catch (e) { /* 無視 */ } }
+    const slider = $('#pVol');
+    slider.value = Math.round(volume * 100);
+    $('#pVolNum').textContent = muted ? '0' : String(Math.round(volume * 100));
+    const mb = $('#pMute');
+    mb.setAttribute('aria-label', muted || volume === 0 ? 'ミュート解除' : 'ミュート');
+    mb.replaceChildren(iconSpeaker(muted || volume === 0 ? 0 : (volume < 0.5 ? 1 : 2)));
+  }
+  function saveVolume() {
+    try { localStorage.setItem(VOL_KEY, String(volume)); localStorage.setItem(VOL_KEY + '-muted', muted ? '1' : '0'); } catch (e) { /* 無視 */ }
   }
   function closePlayer() {
     audio.pause();
@@ -2297,6 +2373,16 @@ h1 { letter-spacing: .06em; }
     syncMode();
     toast('再生モード：' + MODES.find((x) => x.key === playMode).label);
   });
+  $('#pVol').addEventListener('input', (e) => {
+    volume = Math.max(0, Math.min(1, e.target.value / 100));
+    if (volume > 0) muted = false;
+    unlockAudio(); applyVolume(); saveVolume();
+  });
+  $('#pMute').addEventListener('click', () => {
+    if (volume === 0) { volume = 0.5; muted = false; } else muted = !muted;
+    unlockAudio(); applyVolume(); saveVolume();
+  });
+  applyVolume();
   syncMode();
   audio.addEventListener('error', () => { if (cur.id) toast('再生できませんでした。ファイル形式に対応していない可能性があります。'); });
   audio.addEventListener('timeupdate', () => {
