@@ -202,9 +202,14 @@ body.reordering { -webkit-user-select: none; user-select: none; cursor: grabbing
 .p-title { font-weight: 700; font-size: .92rem; line-height: 1.4; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .p-row { display: flex; align-items: center; gap: 10px; }
 .seek { flex: 1; min-width: 0; height: 28px; margin: 0; accent-color: var(--accent); touch-action: manipulation; }
+.p-ctl { display: flex; align-items: center; gap: 6px; margin-top: 2px; }
+.player .icon-btn.sm { width: 36px; height: 36px; }
+.mode-btn { margin-left: auto; display: inline-flex; align-items: center; gap: 6px; min-height: 34px; padding: 0 12px; border-radius: 999px; border: 1px solid var(--line); background: transparent; color: var(--muted); font-size: .78rem; white-space: nowrap; cursor: pointer; }
+.player .icon-btn:disabled { opacity: .35; cursor: default; }
+.mode-btn.on { color: var(--accent); border-color: var(--accent); }
 .p-time { flex: none; color: var(--muted); font-size: .78rem; font-variant-numeric: tabular-nums; }
-body.has-player .app { padding-bottom: 230px; }
-body.has-player .toast { bottom: calc(168px + env(safe-area-inset-bottom, 0px)); }
+body.has-player .app { padding-bottom: 270px; }
+body.has-player .toast { bottom: calc(208px + env(safe-area-inset-bottom, 0px)); }
 .foot { margin: 14px 4px 0; color: var(--muted); font-size: .85rem; word-break: auto-phrase; }
 .link {
   background: none; border: 0; padding: 0 2px; min-height: 32px; color: var(--accent); font-weight: 700;
@@ -534,6 +539,11 @@ h1 { letter-spacing: .06em; }
       <div class="p-row">
         <input id="pSeek" class="seek" type="range" min="0" max="1000" step="1" value="0" aria-label="再生位置">
         <span class="p-time" id="pTime">0:00 / 0:00</span>
+      </div>
+      <div class="p-ctl">
+        <button id="pPrev" class="icon-btn sm" type="button" aria-label="前の曲"></button>
+        <button id="pNext" class="icon-btn sm" type="button" aria-label="次の曲"></button>
+        <button id="pMode" class="mode-btn" type="button"></button>
       </div>
     </div>
     <button id="pClose" class="icon-btn" type="button" aria-label="プレーヤーを閉じる"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
@@ -1917,6 +1927,8 @@ h1 { letter-spacing: .06em; }
       navigator.mediaSession.metadata = new MediaMetadata({ title: sg ? sg.title : '' });
       navigator.mediaSession.setActionHandler('play', () => { audio.play().catch(() => {}); });
       navigator.mediaSession.setActionHandler('pause', () => { audio.pause(); });
+      navigator.mediaSession.setActionHandler('nexttrack', queue.length > 1 ? () => { step(1, false); } : null);
+      navigator.mediaSession.setActionHandler('previoustrack', queue.length > 1 ? () => { step(-1, false); } : null);
     } catch (e) { /* 無視 */ }
   }
   async function startPlayback(id, url, revoke) {
@@ -1933,25 +1945,100 @@ h1 { letter-spacing: .06em; }
     catch (e) { toast('再生できませんでした。ファイル形式に対応していない可能性があります。'); }
     syncPlay();
   }
-  async function playSong(id) {
-    if (cur.id === id) { if (audio.paused) audio.play().catch(() => {}); else audio.pause(); return; }
+  /* ---- 連続再生・リピート ---- */
+  const MODES = [
+    { key: 'once', label: '1曲のみ' },
+    { key: 'seq', label: '連続再生' },
+    { key: 'all', label: '全曲リピート' },
+    { key: 'one', label: '1曲リピート' }
+  ];
+  const MODE_KEY = 'song-vault-play-mode';
+  let playMode = 'once';
+  try { const m = localStorage.getItem(MODE_KEY); if (MODES.some((x) => x.key === m)) playMode = m; } catch (e) { /* 無視 */ }
+  let queue = [];
+  function iconStep(dir) {
+    const s = svgEl('svg', { viewBox: '0 0 24 24', width: 20, height: 20, 'aria-hidden': 'true', fill: 'none', stroke: 'currentColor', 'stroke-width': '2', 'stroke-linecap': 'round', 'stroke-linejoin': 'round' });
+    if (dir < 0) s.append(svgEl('path', { d: 'M6 5v14' }), svgEl('path', { d: 'M19 6v12l-10-6z', fill: 'currentColor' }));
+    else s.append(svgEl('path', { d: 'M18 5v14' }), svgEl('path', { d: 'M5 6v12l10-6z', fill: 'currentColor' }));
+    return s;
+  }
+  function iconMode(key) {
+    const s = svgEl('svg', { viewBox: '0 0 24 24', width: 18, height: 18, 'aria-hidden': 'true', fill: 'none', stroke: 'currentColor', 'stroke-width': '2', 'stroke-linecap': 'round', 'stroke-linejoin': 'round' });
+    if (key === 'once') s.append(svgEl('path', { d: 'M5 12h12' }), svgEl('path', { d: 'M14 8l4 4-4 4' }));
+    else if (key === 'seq') s.append(svgEl('path', { d: 'M4 8h11' }), svgEl('path', { d: 'M4 12h11' }), svgEl('path', { d: 'M4 16h7' }), svgEl('path', { d: 'M17 9l4 3-4 3z', fill: 'currentColor' }));
+    else {
+      s.append(svgEl('path', { d: 'M17 3l3 3-3 3' }), svgEl('path', { d: 'M4 11V9a3 3 0 0 1 3-3h13' }),
+        svgEl('path', { d: 'M7 21l-3-3 3-3' }), svgEl('path', { d: 'M20 13v2a3 3 0 0 1-3 3H4' }));
+      if (key === 'one') s.append(svgEl('path', { d: 'M12 10v4' }));
+    }
+    return s;
+  }
+  function syncMode() {
+    const m = MODES.find((x) => x.key === playMode);
+    const b = $('#pMode');
+    b.replaceChildren(iconMode(m.key), document.createTextNode(m.label));
+    b.classList.toggle('on', m.key !== 'once');
+    b.setAttribute('aria-label', '再生モード：' + m.label + '（タップで切り替え）');
+    const multi = queue.length > 1;
+    $('#pPrev').disabled = !multi; $('#pNext').disabled = !multi;
+  }
+  function buildQueue() {
+    const list = state.nav.level === 'songs' ? view() : state.songs.filter((x) => x.albumId === state.nav.albumId);
+    queue = list.filter((x) => state.fileMeta.has(x.id)).map((x) => x.id);
+  }
+  /* 曲ファイルを読み込んで再生。成功したら true */
+  async function loadAndPlay(id, quiet) {
     if (state.backend === 'db') {
-      if (!state.fileMeta.has(id)) { toast('この曲にはファイルがありません。'); return; }
+      if (!state.fileMeta.has(id)) { if (!quiet) toast('この曲にはファイルがありません。'); return false; }
       const { data } = state.sb.storage.from(FILE_BUCKET).getPublicUrl(id);
-      if (!data || !data.publicUrl) { toast('曲ファイルを読み込めませんでした。'); return; }
+      if (!data || !data.publicUrl) { if (!quiet) toast('曲ファイルを読み込めませんでした。'); return false; }
       await startPlayback(id, data.publicUrl, false);
-      return;
+      return true;
     }
     let rec;
-    try { rec = await fileGet(id); } catch (e) { toast('曲ファイルを読み込めませんでした。'); return; }
-    if (!rec || !rec.blob) { toast('このブラウザには曲ファイルがありません。'); return; }
+    try { rec = await fileGet(id); } catch (e) { if (!quiet) toast('曲ファイルを読み込めませんでした。'); return false; }
+    if (!rec || !rec.blob) { if (!quiet) toast('このブラウザには曲ファイルがありません。'); return false; }
     await startPlayback(id, URL.createObjectURL(rec.blob), true);
+    return true;
+  }
+  async function playSong(id) {
+    if (cur.id === id) { if (audio.paused) audio.play().catch(() => {}); else audio.pause(); return; }
+    buildQueue();
+    if (queue.indexOf(id) < 0) queue.push(id);
+    const ok = await loadAndPlay(id, false);
+    if (!ok) queue = queue.filter((x) => x !== id);
+    syncMode();
+  }
+  /* dir: 1=次へ / -1=前へ。auto=曲の終わりからの自動送り */
+  async function step(dir, auto) {
+    if (!queue.length) return false;
+    let i = queue.indexOf(cur.id);
+    for (let n = 0; n < queue.length; n++) {
+      i += dir;
+      if (i >= queue.length || i < 0) {
+        if (auto && playMode !== 'all') return false;
+        i = i >= queue.length ? 0 : queue.length - 1;
+      }
+      const id = queue[i];
+      if (id === cur.id) { audio.currentTime = 0; try { await audio.play(); } catch (e) { /* 無視 */ } syncPlay(); return true; }
+      if (await loadAndPlay(id, true)) return true;
+    }
+    return false;
+  }
+  async function onEnded() {
+    if (playMode === 'one') { audio.currentTime = 0; try { await audio.play(); } catch (e) { /* 無視 */ } syncPlay(); return; }
+    if (playMode === 'seq' || playMode === 'all') {
+      if (await step(1, true)) return;
+    }
+    audio.currentTime = 0; syncPlay();
   }
   function closePlayer() {
     audio.pause();
     audio.removeAttribute('src'); audio.load();
     if (cur.url && cur.revoke) URL.revokeObjectURL(cur.url);
     cur = { id: null, url: null, revoke: false };
+    queue = [];
+    syncMode();
     $('#player').hidden = true;
     document.body.classList.remove('has-player');
     syncPlay();
@@ -2199,7 +2286,18 @@ h1 { letter-spacing: .06em; }
   $('#pClose').addEventListener('click', closePlayer);
   audio.addEventListener('play', syncPlay);
   audio.addEventListener('pause', syncPlay);
-  audio.addEventListener('ended', () => { audio.currentTime = 0; syncPlay(); });
+  audio.addEventListener('ended', onEnded);
+  $('#pPrev').append(iconStep(-1)); $('#pNext').append(iconStep(1));
+  $('#pPrev').addEventListener('click', () => { if (audio.currentTime > 3) { audio.currentTime = 0; } else step(-1, false); });
+  $('#pNext').addEventListener('click', () => { step(1, false); });
+  $('#pMode').addEventListener('click', () => {
+    const i = MODES.findIndex((x) => x.key === playMode);
+    playMode = MODES[(i + 1) % MODES.length].key;
+    try { localStorage.setItem(MODE_KEY, playMode); } catch (e) { /* 無視 */ }
+    syncMode();
+    toast('再生モード：' + MODES.find((x) => x.key === playMode).label);
+  });
+  syncMode();
   audio.addEventListener('error', () => { if (cur.id) toast('再生できませんでした。ファイル形式に対応していない可能性があります。'); });
   audio.addEventListener('timeupdate', () => {
     const d = audio.duration;
