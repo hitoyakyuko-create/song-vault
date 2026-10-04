@@ -708,7 +708,7 @@ h1 { letter-spacing: .06em; }
   const NS = 'http://www.w3.org/2000/svg';
   const coll = new Intl.Collator('ja');
   const LOCAL_KEY = 'song-vault-v2';
-  const SORT_KEY = 'song-vault-sort';
+  const SORT_KEY = 'song-vault-sort-v2';
 
   /* ---------- Supabase設定：ここに自分のプロジェクトの値を入れてください ---------- */
   const SUPABASE_URL = 'https://wcflqcxskexarblsnyht.supabase.co';
@@ -719,7 +719,7 @@ h1 { letter-spacing: .06em; }
     composers: [], albums: [], songs: [],
     loaded: false, backend: null, sb: null,
     nav: { level: 'composers', composerId: null, albumId: null },
-    q: '', sortBy: { composers: 'title', albums: 'new', songs: 'new' }, filter: { kind: 'all', tag: '' },
+    q: '', sortBy: { composers: 'manual', albums: 'manual', songs: 'manual' }, filter: { kind: 'all', tag: '' },
     editing: { type: null, id: null },
     busy: new Set(), flash: null, flashScroll: false,
     fileMeta: new Map(), imgMeta: new Map()
@@ -1200,7 +1200,7 @@ h1 { letter-spacing: .06em; }
   }
 
   /* ---------- view: 一覧の絞り込み・並べ替え ---------- */
-  function curSort() { return state.sortBy[state.nav.level] || 'new'; }
+  function curSort() { return state.sortBy[state.nav.level] || 'manual'; }
   function cmpItems(a, b, key, mode) {
     if (mode === 'title') return coll.compare(a[key], b[key]);
     if (mode === 'manual') {
