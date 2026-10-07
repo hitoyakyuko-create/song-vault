@@ -11,9 +11,11 @@
 <meta name="apple-mobile-web-app-title" content="MV">
 <meta name="application-name" content="MV">
 <title>MUSIC VAULT</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<link rel="preconnect" href="https://wcflqcxskexarblsnyht.supabase.co" crossorigin>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700;900&family=Noto+Serif+JP:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
 <style>
 :root {
   --bg: #EDEFF7;
@@ -699,7 +701,7 @@ h1 { letter-spacing: .06em; }
 
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.3/dist/umd/supabase.js"></script>
 <script>
 (function () {
   'use strict';
@@ -1001,6 +1003,9 @@ h1 { letter-spacing: .06em; }
       toast('データを読み込めませんでした。' + errMsg(sbErr(cs.error || as.error || ss.error)));
       return;
     }
+    const sig = JSON.stringify([cs.data, as.data, ss.data]);
+    if (state.loaded && sig === state.sig) return;
+    state.sig = sig;
     state.composers = (cs.data || []).map(rowToComposer);
     state.albums = (as.data || []).map(rowToAlbum);
     state.songs = (ss.data || []).map(rowToSong);
@@ -1144,13 +1149,40 @@ h1 { letter-spacing: .06em; }
     const { data } = state.sb.storage.from(FILE_BUCKET).getPublicUrl(imgPath(kind, id));
     return data && data.publicUrl;
   }
-  function imgPutRec(kind, id, f) {
+  /* カバー画像は一覧で小さく表示するだけなので、保存前に縮小して容量と読み込み時間を減らす */
+  function shrinkImage(f, maxSide, quality) {
+    return new Promise((resolve) => {
+      try {
+        if (!f || !/^image\/(jpeg|png|webp)$/.test(f.type)) { resolve(f); return; }
+        const url = URL.createObjectURL(f);
+        const img = new Image();
+        img.onload = () => {
+          URL.revokeObjectURL(url);
+          try {
+            const w = img.naturalWidth, hh = img.naturalHeight;
+            const scale = Math.min(1, maxSide / Math.max(w, hh));
+            if (scale >= 1 && f.size < 300 * 1024) { resolve(f); return; }
+            const cw = Math.max(1, Math.round(w * scale)), ch = Math.max(1, Math.round(hh * scale));
+            const cv = document.createElement('canvas');
+            cv.width = cw; cv.height = ch;
+            cv.getContext('2d').drawImage(img, 0, 0, cw, ch);
+            cv.toBlob((b) => { resolve(b && b.size < f.size ? b : f); }, 'image/webp', quality);
+          } catch (e) { resolve(f); }
+        };
+        img.onerror = () => { URL.revokeObjectURL(url); resolve(f); };
+        img.src = url;
+      } catch (e) { resolve(f); }
+    });
+  }
+  async function imgPutRec(kind, id, f) {
+    const origName = f.name;
+    if (/cover$/.test(kind)) f = await shrinkImage(f, 720, 0.82);
     const type = guessImgType(f);
     if (state.backend === 'db') {
       return state.sb.storage.from(FILE_BUCKET).upload(imgPath(kind, id), f, { upsert: true, contentType: type })
-        .then((res) => { if (res.error) throw sbErr(res.error); return { name: f.name.slice(0, 200), type: type, size: f.size }; });
+        .then((res) => { if (res.error) throw sbErr(res.error); return { name: origName.slice(0, 200), type: type, size: f.size }; });
     }
-    const meta = { name: f.name.slice(0, 200), type: type, size: f.size };
+    const meta = { name: origName.slice(0, 200), type: type, size: f.size };
     const key = kind + ':' + id;
     return tx(['imgblobs', 'imgmeta'], 'readwrite', (t) => {
       t.objectStore('imgblobs').put(f.slice(0, f.size, type), key);
@@ -1195,7 +1227,7 @@ h1 { letter-spacing: .06em; }
   }
   function coverThumb(kind, id, present, seed) {
     const url = present ? imgUrl(kind, id) : null;
-    if (url) return h('img', { class: 'cover img', src: url, alt: '', loading: 'lazy' });
+    if (url) return h('img', { class: 'cover img', src: url, alt: '', loading: 'lazy', decoding: 'async' });
     return coverArt(seed);
   }
 
