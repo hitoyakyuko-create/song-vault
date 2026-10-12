@@ -573,7 +573,7 @@ h1 { letter-spacing: .06em; }
     <h2 id="sheetTitle">追加</h2>
 
     <div id="fldsComposer">
-      <label class="fld"><span>作曲者名</span><input id="cName" class="field-ctl" type="text" maxlength="120" autocomplete="off"></label>
+      <label class="fld"><span>Credit名</span><input id="cName" class="field-ctl" type="text" maxlength="120" autocomplete="off"></label>
       <label class="fld"><span>説明文</span><textarea id="cNote" class="field-ctl" maxlength="2000"></textarea></label>
       <div class="fld" id="cCoverFld">
         <span id="cCoverLbl">画像</span>
@@ -661,7 +661,7 @@ h1 { letter-spacing: .06em; }
 <div id="bkOverlay" class="overlay" hidden>
   <div class="sheet" id="bkSheet" role="dialog" aria-modal="true" aria-labelledby="bkTitle">
     <h2 id="bkTitle">バックアップ</h2>
-    <p class="sub">作曲者・アルバム・曲のデータをまとめてJSONファイルに書き出せます。別の端末やブラウザで読み込むと、同じ内容を追加できます。アップロードした曲ファイルや画像は含まれません。</p>
+    <p class="sub">Credit・アルバム・曲のデータをまとめてJSONファイルに書き出せます。別の端末やブラウザで読み込むと、同じ内容を追加できます。アップロードした曲ファイルや画像は含まれません。</p>
     <p class="sub" id="bkCount"></p>
     <div class="stack">
       <button id="bkExport" class="btn primary" type="button">ファイルに書き出す</button>
@@ -687,13 +687,13 @@ h1 { letter-spacing: .06em; }
         <div class="bubble"><h2 id="helpTitle">使い方</h2><p>よく使う操作をご案内しますね。</p></div>
       </div>
       <dl class="tips">
-        <div><dt>3つの階層</dt><dd>「作曲者→アルバム→曲」の順に画面を掘り下げて見ていきます。名前をタップすると中へ、鉛筆マークをタップすると編集できます。</dd></div>
-        <div><dt>作曲者・アルバムを追加する</dt><dd>右下の「追加」から登録します。名前は必須ですが、説明文やジャケット画像はあとから足せます。</dd></div>
+        <div><dt>3つの階層</dt><dd>「Credit→アルバム→曲」の順に画面を掘り下げて見ていきます。名前をタップすると中へ、鉛筆マークをタップすると編集できます。</dd></div>
+        <div><dt>Credit・アルバムを追加する</dt><dd>右下の「追加」から登録します。名前は必須ですが、説明文やジャケット画像はあとから足せます。</dd></div>
         <div><dt>曲を追加する</dt><dd>アルバムを開いた状態で右下の「追加」から登録します。必須なのは曲名だけです。</dd></div>
         <div><dt>探す</dt><dd>検索欄は、今開いている階層の中だけを探します。曲の画面ではタグで絞り込むこともできます。</dd></div>
         <div><dt>曲ファイル・画像</dt><dd id="tipFile">曲の追加画面で音声ファイルを選ぶと、リストの再生ボタンで聴けます。ジャケットや歌詞カードの画像も、アルバムや曲ごとに登録できます。</dd></div>
         <div><dt>お気に入り</dt><dd>曲の右にある星をタップします。お気に入りの曲があると、タグの並びに「お気に入り」が出ます。</dd></div>
-        <div><dt>削除</dt><dd>編集画面の「削除」を2回押すと確定します。作曲者やアルバムを削除すると、中に入っているアルバムや曲もまとめて削除されます。</dd></div>
+        <div><dt>削除</dt><dd>編集画面の「削除」を2回押すと確定します。Creditやアルバムを削除すると、中に入っているアルバムや曲もまとめて削除されます。</dd></div>
         <div><dt>バックアップ</dt><dd id="tipBackup">データは、いま開いているブラウザの中に保存されます。左下の「バックアップ」でファイルに書き出しておくと安心です。別の端末には、書き出したファイルを読み込むと移せます。</dd></div>
       </dl>
     </div>
@@ -861,7 +861,7 @@ h1 { letter-spacing: .06em; }
     }).slice(0, 12);
   }
 
-  /* ---------- data: 作曲者 / アルバム / 曲 ---------- */
+  /* ---------- data: Credit / アルバム / 曲 ---------- */
   function cleanComposer(id, d) {
     d = d || {};
     return {
@@ -971,7 +971,7 @@ h1 { letter-spacing: .06em; }
     } catch (e) { throw { code: 'local_failed' }; }
   }
 
-  /* ---------- CRUD: 作曲者・アルバム・曲 ---------- */
+  /* ---------- CRUD: Credit・アルバム・曲 ---------- */
   async function refreshAll() {
     const [cs, as, ss] = await Promise.all([
       state.sb.from('composers').select('*'),
@@ -1254,7 +1254,7 @@ h1 { letter-spacing: .06em; }
     const main = h('button', { class: 'row-main', type: 'button', onclick: () => goAlbums(c.id) },
       coverThumb('ccover', c.id, hasCover, c.name),
       h('span', { class: 'meta' },
-        h('span', { class: 'name' }, c.name || '（無題の作曲者）'),
+        h('span', { class: 'name' }, c.name || '（無題のCredit）'),
         c.note ? h('span', { class: 'artist' }, c.note) : null));
     const edit = h('button', { class: 'icon-btn', type: 'button', 'aria-label': '編集', onclick: (e) => { e.stopPropagation(); openComposerSheet(c.id); } }, iconEdit());
     const arrow = h('span', { class: 'icon-btn', 'aria-hidden': 'true' }, iconChevron());
@@ -1316,7 +1316,7 @@ h1 { letter-spacing: .06em; }
     } else if (state.nav.level === 'albums') {
       back.hidden = false; $('#sub').hidden = true; back.onclick = goComposers;
       const c = currentComposer();
-      h1.textContent = c ? (c.name || '（無題の作曲者）') : '';
+      h1.textContent = c ? (c.name || '（無題のCredit）') : '';
       if (c && c.note) { noteBox.hidden = false; noteBox.textContent = c.note; } else { noteBox.hidden = true; }
     } else {
       back.hidden = false; $('#sub').hidden = true; back.onclick = () => goAlbums(state.nav.composerId);
@@ -1324,10 +1324,10 @@ h1 { letter-spacing: .06em; }
       h1.textContent = a ? (a.name || '（無題のアルバム）') : '';
       if (a && a.note) { noteBox.hidden = false; noteBox.textContent = a.note; } else { noteBox.hidden = true; }
     }
-    $('#q').placeholder = state.nav.level === 'composers' ? '作曲者を検索' : (state.nav.level === 'albums' ? 'アルバムを検索' : '曲を検索');
+    $('#q').placeholder = state.nav.level === 'composers' ? 'Creditを検索' : (state.nav.level === 'albums' ? 'アルバムを検索' : '曲を検索');
     $('#sortWrap').hidden = false;
     $('#sort').value = curSort();
-    $('#add').textContent = state.nav.level === 'composers' ? '作曲者を追加' : (state.nav.level === 'albums' ? 'アルバムを追加' : '曲を追加');
+    $('#add').textContent = state.nav.level === 'composers' ? 'Creditを追加' : (state.nav.level === 'albums' ? 'アルバムを追加' : '曲を追加');
   }
 
   function renderChips() {
@@ -1378,7 +1378,7 @@ h1 { letter-spacing: .06em; }
     const n = state.nav.level === 'composers' ? state.composers.length
       : state.nav.level === 'albums' ? state.albums.filter((a) => a.composerId === state.nav.composerId).length
       : state.songs.filter((s) => s.albumId === state.nav.albumId).length;
-    const unit = state.nav.level === 'composers' ? '人' : (state.nav.level === 'albums' ? '枚' : '曲');
+    const unit = state.nav.level === 'composers' ? '件' : (state.nav.level === 'albums' ? '枚' : '曲');
     const m = items.length;
     el.textContent = m === n ? '全' + n + unit : m + unit + ' / 全' + n + unit;
   }
@@ -1387,8 +1387,8 @@ h1 { letter-spacing: .06em; }
   function clearFilters() { state.q = ''; $('#q').value = ''; $('#qClear').hidden = true; state.filter = { kind: 'all', tag: '' }; render(); }
 
   function emptyState() {
-    const label = state.nav.level === 'composers' ? '作曲者を追加' : (state.nav.level === 'albums' ? 'アルバムを追加' : '曲を追加');
-    const msg = state.nav.level === 'composers' ? 'はじめまして。まずは作曲者を1人、登録してみましょう。'
+    const label = state.nav.level === 'composers' ? 'Creditを追加' : (state.nav.level === 'albums' ? 'アルバムを追加' : '曲を追加');
+    const msg = state.nav.level === 'composers' ? 'はじめまして。まずはCreditを1件、登録してみましょう。'
       : state.nav.level === 'albums' ? 'このアルバムはまだ空です。アルバムを追加してみましょう。'
       : 'この曲はまだ登録されていません。曲を追加してみましょう。';
     return h('div', { class: 'empty' },
@@ -1464,13 +1464,13 @@ h1 { letter-spacing: .06em; }
     if (lastFocus && lastFocus.focus && document.contains(lastFocus)) lastFocus.focus();
   }
 
-  /* ---------- 作曲者シート ---------- */
+  /* ---------- Creditシート ---------- */
   function openComposerSheet(id) {
     const c = id ? state.composers.find((x) => x.id === id) : null;
     if (id && !c) return;
     state.editing = { type: 'composer', id: c ? c.id : null };
     showFlds('composer');
-    $('#sheetTitle').textContent = c ? '作曲者を編集' : '作曲者を追加';
+    $('#sheetTitle').textContent = c ? 'Creditを編集' : 'Creditを追加';
     $('#save').textContent = c ? '保存' : '追加';
     $('#cName').value = c ? c.name : '';
     $('#cNote').value = c ? c.note : '';
@@ -1482,7 +1482,7 @@ h1 { letter-spacing: .06em; }
   }
   function saveComposer() {
     const name = $('#cName').value.trim();
-    if (!name) { setErr('作曲者名を入力してください。'); $('#cName').focus(); return null; }
+    if (!name) { setErr('Credit名を入力してください。'); $('#cName').focus(); return null; }
     const existing = state.editing.id ? state.composers.find((x) => x.id === state.editing.id) : null;
     return {
       id: existing ? existing.id : newId(),
@@ -2186,7 +2186,7 @@ h1 { letter-spacing: .06em; }
     el.textContent = msg || '';
     el.className = 'status' + (bad ? ' bad' : '');
   }
-  function bkCount() { $('#bkCount').textContent = '現在 作曲者' + state.composers.length + '人・アルバム' + state.albums.length + '枚・曲' + state.songs.length + '曲'; }
+  function bkCount() { $('#bkCount').textContent = '現在 Credit' + state.composers.length + '件・アルバム' + state.albums.length + '枚・曲' + state.songs.length + '曲'; }
   function openBackup() {
     bkStatus('', false); bkCount();
     bkLastFocus = document.activeElement;
@@ -2218,7 +2218,7 @@ h1 { letter-spacing: .06em; }
 
   async function doExport() {
     if (!bkReady()) return;
-    if (!state.composers.length) { bkStatus('書き出す作曲者がまだいません。', true); return; }
+    if (!state.composers.length) { bkStatus('書き出すCreditがまだありません。', true); return; }
     const text = exportText();
     const name = 'song-vault-' + ymd() + '.json';
     let file = null;
@@ -2245,7 +2245,7 @@ h1 { letter-spacing: .06em; }
 
   async function doCopy() {
     if (!bkReady()) return;
-    if (!state.composers.length) { bkStatus('コピーする作曲者がまだいません。', true); return; }
+    if (!state.composers.length) { bkStatus('コピーするCreditがまだありません。', true); return; }
     const text = exportText();
     try {
       await navigator.clipboard.writeText(text);
@@ -2279,7 +2279,7 @@ h1 { letter-spacing: .06em; }
     try { data = JSON.parse(text); }
     catch (e) { bkStatus('JSONとして読み取れませんでした。書き出したファイルの内容か確認してください。', true); return false; }
     if (!data || !Array.isArray(data.composers) || !Array.isArray(data.albums) || !Array.isArray(data.songs)) {
-      bkStatus('このファイルは今の形式（作曲者・アルバム・曲）に対応していません。', true); return false;
+      bkStatus('このファイルは今の形式（Credit・アルバム・曲）に対応していません。', true); return false;
     }
     if (data.composers.length > 2000 || data.albums.length > 5000 || data.songs.length > 20000) {
       bkStatus('データが多すぎます。', true); return false;
@@ -2328,7 +2328,7 @@ h1 { letter-spacing: .06em; }
       bkStatus('追加できるデータがありませんでした。' + extra, true);
       return false;
     }
-    bkStatus('作曲者' + freshC.length + '人・アルバム' + freshA.length + '枚・曲' + freshS.length + '曲を追加しました。' + extra, false);
+    bkStatus('Credit' + freshC.length + '件・アルバム' + freshA.length + '枚・曲' + freshS.length + '曲を追加しました。' + extra, false);
     return true;
   }
 
